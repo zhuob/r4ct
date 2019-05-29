@@ -1,0 +1,16 @@
+Package: MethodDev
+Type: Package
+Title: Dosen't have a title 
+Version: 0.1.2
+Author: Bin Zhuo
+Maintainer: Bin Zhuo <bzhuo@amgen.com>
+Description: This package is developed to maintain commonly used functions that 
+    I write for the work at simulation team in Design and Innovation team within Amgen.
+License: What license is it under?
+Encoding: UTF-8
+RdMacros: Rdpack
+Imports: Rdpack
+LazyData: true
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat

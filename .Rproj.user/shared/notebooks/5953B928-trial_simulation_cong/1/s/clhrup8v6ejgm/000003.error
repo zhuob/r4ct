@@ -1,0 +1,1 @@
+{"frames":[],"message":"Error in cong_simu_trial_parallel(nsim = nsim, ncores = 7, n_allcomer = n_allcomer,  : \n  could not find function \"cong_simu_trial_parallel\"\n"}

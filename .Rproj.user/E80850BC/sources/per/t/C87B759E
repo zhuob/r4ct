@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555018380375.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1024200778",
+    "id" : "C87B759E",
+    "lastKnownWriteTime" : 1555610258,
+    "last_content_update" : 1555610258890,
+    "path" : "C:/Users/bzhuo/Box Sync/Projects/method_development/MethodDev/R/cong_chen_2018.R",
+    "project_path" : "R/cong_chen_2018.R",
+    "properties" : {
+        "cursorPosition" : "3,32",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

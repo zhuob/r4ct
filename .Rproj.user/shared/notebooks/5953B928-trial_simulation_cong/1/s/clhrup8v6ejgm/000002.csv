@@ -1,0 +1,24 @@
+"0","# Type 1 error 
+result <- cong_simu_trial_parallel(nsim = nsim, ncores = 7, 
+                                   n_allcomer = n_allcomer,          
+                                   n_enrichment = n_enrichment,
+                                   alloc = alloc,
+                                   b_size = b_size, 
+                                   rate = rate,                 # enrollment rate
+                                   marker_positive = marker_positive,
+                                   marker_negative = marker_negative,
+                                   marker_prob = marker_prob,
+                                   sbj = sbj,                
+                                   fu_time_ia = fu_time_ia,           
+                                   n_event = n_event, 
+                                   cutoff = cutoff, 
+                                   alpha1 = alpha1,
+                                   alpha2 = alpha2,
+                                   par_ctrl_pos = par_ctrl_neg,
+                                   par_ctrl_neg = par_ctrl_neg,
+                                   par_trt_pos = par_trt_pos,
+                                   par_trt_neg = par_trt_pos)
+"
+"2","Error in cong_simu_trial_parallel(nsim = nsim, ncores = 7, n_allcomer = n_allcomer,  : 
+  could not find function ""cong_simu_trial_parallel""
+"
