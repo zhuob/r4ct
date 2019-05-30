@@ -9,7 +9,7 @@
 #' @param h the cutoff value for x; will integrate from `h` to `Inf`
 #' @param k the cutoff value for y; will integrate from `k` to `Inf`
 #' @param rho the correlation of the bivariate normal distribution.
-#' @import Rdpack
+# #' @import Rdpack
 #' @return a p value
 #' @export
 #' @references{
