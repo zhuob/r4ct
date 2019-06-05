@@ -4,13 +4,15 @@
 \alias{rand_arm}
 \title{generate blocked randomized arms}
 \usage{
-rand_arm(nsbj, ratio)
+rand_arm(nsbj, ratio, arm_name = paste("arm", 1:length(ratio), sep =
+  "_"))
 }
 \arguments{
-\item{nsbj}{a vector specifying number of subjects to be randominzed for each
-arm}
+\item{nsbj}{an integer for total number of subjects to be randominzed}
 
 \item{ratio}{the allocation ratio}
+
+\item{arm_name}{a vector of characters for arms}
 }
 \value{
 a vector of length `sum(nsbj)` with randomized treatment arms
@@ -19,7 +21,7 @@ a vector of length `sum(nsbj)` with randomized treatment arms
 generate blocked randomized arms
 }
 \examples{
-rand_arm(nsbj = c(0, 1), ratio = c(1, 1))
-rand_arm(nsbj = c(5, 5, 2), ratio = c(2, 2, 1))
+rand_arm(nsbj = 1, ratio = c(1, 1))
+rand_arm(nsbj = 12, ratio = c(2, 2, 1))
 
 }
