@@ -1,3 +1,4 @@
+inst/doc
 .Rproj.user
 .Rhistory
 .RData
@@ -20,7 +21,15 @@
 .Rproj.user/E80850BC/sources/per/t/EDF117C0-contents
 .Rproj.user/E80850BC/sources/prop/9EF4DA21
 .Rproj.user/E80850BC/pcs/source-pane.pper
-.Rhistory
 .Rproj.user/E80850BC/sources/prop/E8D544E
 *.pper
+.Rproj.user/E80850BC/sources/prop/3072453
 *.pper
+.Rhistory
+*.pper
+.Rproj.user/shared/notebooks/paths
+.Rproj.user/E80850BC/sources/prop/INDEX
+.Rproj.user/E80850BC/sources/prop/BF53FD15
+.Rproj.user/E80850BC/sources/prop/3072453
+.Rproj.user/E80850BC/rmd-outputs
+.Rhistory

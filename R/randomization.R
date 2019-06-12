@@ -25,7 +25,7 @@ rand_arm <- function(nsbj, ratio, arm_name = paste("arm", 1:length(ratio), sep =
   } else{
   arm_1 <- as.vector(replicate(n_block, sample(arms)))
   }
-  arm_2 <- sample(arm_name, n_remainder)
+  arm_2 <- sample(rep(arm_name, ratio), n_remainder)
   arm <- c(arm_1, arm_2)
   return(arm)
 }
