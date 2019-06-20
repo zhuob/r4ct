@@ -9,7 +9,12 @@ Description: This package is developed to maintain commonly used functions that
 License: What license is it under?
 Encoding: UTF-8
 RdMacros: Rdpack
-Imports: Rdpack
+Imports: 
+    Rdpack,
+    dplyr,
+    foreach,
+    gsDesign,
+    baseUtility
 LazyData: true
 RoxygenNote: 6.1.1
 Suggests: 

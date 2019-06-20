@@ -127,7 +127,7 @@ calc_p1_or <- function(p0, p1 = NULL, or = NULL){
 #' @param eval_success Is this for evaluating probability of success?
 #'
 #' @return a p value
-#'
+#' @export
 
 tail_prob <- function(dat, cutoff, prob1, prob2, eval_success = TRUE){
 
@@ -135,10 +135,14 @@ tail_prob <- function(dat, cutoff, prob1, prob2, eval_success = TRUE){
   prob2 <- rlang::enquo(prob2)
 
   if(eval_success){ # if evaluating success: P(p1 - p0 > delta) > U
-    pval <- dat %>% filter(!!prob1 > cutoff) %>% select(!!prob2) %>% sum
-  } else{  # if evaluating futility: P(p1 - p0 > delta) < L
-    pval <- dat %>% filter(!!prob1 < cutoff) %>% select(!!prob2) %>% sum
-  }
+    temp <- dat %>% filter(!!prob1 > cutoff) %>% select(!!prob2)
+
+   } else{  # if evaluating futility: P(p1 - p0 > delta) < L
+    temp <- dat %>% filter(!!prob1 < cutoff) %>% select(!!prob2)
+   }
+  if(nrow(temp) == 0){pval <- 0}
+  else {pval <- sum(temp[, 1])}
+
   return(pval)
 }
 
