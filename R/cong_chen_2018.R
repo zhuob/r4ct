@@ -39,7 +39,7 @@
 #'   specification for treatment/control and biomarker positive/negative
 #'   population. For enrichment data generation, \code{par_trt_neg} and
 #'   \code{par_ctrl_neg} are set to be \code{NULL}
-#' @param ... other parameters from function \code{\link[AmgOnc]{enrl_dat_gen}}
+#' @param ... other parameters from function \code{\link[baseUtility]{enrl_dat_gen}}
 #'
 #' @return a tibble of simulated survival data
 #'
@@ -61,11 +61,11 @@ cong_dat_gen <- function(nsbj, alloc = c(1, 1), b_size = 2, rate,
   }
 
   ## enrollment generation
-  simu_enroll <- AmgOnc::enrl_gen(nsbj = nsbj, alloc = alloc,
+  simu_enroll <- baseUtility::enrl_gen(nsbj = nsbj, alloc = alloc,
                           b_size = b_size, rate = rate)
 
   ## data generation
-  cong_dat <- AmgOnc::enrl_dat_gen(enrl = simu_enroll,
+  cong_dat <- baseUtility::enrl_dat_gen(enrl = simu_enroll,
                                 arg_list = pars,
                                 marker_prob = marker_prob,
                                 marker_name = marker_name, ...)
@@ -167,7 +167,7 @@ cong_simu_trial <- function(n_allcomer, n_enrichment, alloc = c(1, 1),
                    mutate(event_time = timein + pfs) %>%
                    arrange(event_time) %>% slice(n_event) %>% pull(event_time)
 
-  snapshot_dat <- AmgOnc::take_snapshot(final_dat, type = 1,
+  snapshot_dat <- baseUtility::take_snapshot(final_dat, type = 1,
                 sbj = NA, time = analysis_time) %>%
               mutate(population = if_else(id <= n_allcomer,
                                           "all comers", marker_positive))
@@ -196,7 +196,7 @@ cong_simu_trial_parallel <- function(nsim = 10, ncores = 4, ...){
 
   result <- foreach::foreach(i = 1:nsim, .combine = "rbind",
                              .export = use_function,
-                             .packages = c("AmgOnc", "dplyr") ) %dopar% {
+                             .packages = c("baseUtility", "dplyr") ) %dopar% {
 
         temp <- cong_simu_trial(...)
         # whether the current trial need enrichment

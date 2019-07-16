@@ -24,13 +24,14 @@
 #' @return a tibble which contains the calculated probabilities
 #'
 #' @examples
+#' library(dplyr)
 #' r1 <- pos_two_grid(n0 = 75, n1 = 75, p0 = 0.59, p1= 0.812)
 #' # power
 #' r1 %>% filter(prob_post > 0.68) %>% select(prob_alt) %>% sum
 #' # type 1 error
 #' r1 %>% filter(prob_post > 0.68) %>% select(prob_null) %>% sum
 #'
-#' @seealso \code{\link[AmgOnc]{pos_two}}
+#' @seealso \code{\link[baseUtility]{pos_two}}
 #' @export
 #'
 #'
@@ -57,7 +58,7 @@ pos_two_grid <- function(n0, n1, p0 = 0.25, p1 = 0.538,
     params <- n0_n1 %>% dplyr::select(x0, n0, x1, n1, delta, a0, b0, a1, b1) %>%
                     as.list()
 
-    prob_post <- purrr::pmap_dbl(.l = params, .f = AmgOnc::pos_two)
+    prob_post <- purrr::pmap_dbl(.l = params, .f = baseUtility::pos_two)
 
     result <- n0_n1 %>% dplyr::mutate(prob_post = prob_post,
                                # probs under alternative

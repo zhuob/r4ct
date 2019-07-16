@@ -2,7 +2,7 @@
 % Please edit documentation in R/randomization.R
 \name{rand_arm}
 \alias{rand_arm}
-\title{generate blocked randomized arms}
+\title{generate block randomized arms}
 \usage{
 rand_arm(nsbj, ratio, arm_name = paste("arm", 1:length(ratio), sep =
   "_"))
@@ -15,13 +15,14 @@ rand_arm(nsbj, ratio, arm_name = paste("arm", 1:length(ratio), sep =
 \item{arm_name}{a vector of characters for arms}
 }
 \value{
-a vector of length `sum(nsbj)` with randomized treatment arms
+a vector of length `nsbj` with randomized treatment arms
 }
 \description{
-generate blocked randomized arms
+generate block randomized arms
 }
 \examples{
 rand_arm(nsbj = 1, ratio = c(1, 1))
 rand_arm(nsbj = 12, ratio = c(2, 2, 1))
+rand_arm(nsbj = 4, ratio = c(1, 2, 0, 1))
 
 }

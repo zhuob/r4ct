@@ -1,7 +1,7 @@
 Package: MethodDev
 Type: Package
 Title: Dosen't have a title 
-Version: 0.1.2
+Version: 0.1.3
 Author: Bin Zhuo
 Maintainer: Bin Zhuo <bzhuo@amgen.com>
 Description: This package is developed to maintain commonly used functions that 

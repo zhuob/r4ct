@@ -33,7 +33,7 @@ specification for treatment/control and biomarker positive/negative
 population. For enrichment data generation, \code{par_trt_neg} and
 \code{par_ctrl_neg} are set to be \code{NULL}}
 
-\item{...}{other parameters from function \code{\link[AmgOnc]{enrl_dat_gen}}}
+\item{...}{other parameters from function \code{\link[baseUtility]{enrl_dat_gen}}}
 }
 \value{
 a tibble of simulated survival data

@@ -1,4 +1,9 @@
 
+## Version 0.1.3
+
+   1. add function `rand_timein` that is used to simulate piecewise enrollment time
+   2. add a folder to leverage `testthat` package for running error check when building packages
+
 
 ## Version 0.1.2
 

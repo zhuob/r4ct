@@ -40,6 +40,7 @@ For a given pair of \code{n0} and \code{n1}, after specifying
   such that \eqn{a_1 + b_1 = 2} and \eqn{a_1 = 2p_0}.
 }
 \examples{
+library(dplyr)
 r1 <- pos_two_grid(n0 = 75, n1 = 75, p0 = 0.59, p1= 0.812)
 # power
 r1 \%>\% filter(prob_post > 0.68) \%>\% select(prob_alt) \%>\% sum
@@ -48,5 +49,5 @@ r1 \%>\% filter(prob_post > 0.68) \%>\% select(prob_null) \%>\% sum
 
 }
 \seealso{
-\code{\link[AmgOnc]{pos_two}}
+\code{\link[baseUtility]{pos_two}}
 }
