@@ -3,7 +3,7 @@
 
    1. add function `rand_timein` that is used to simulate piecewise enrollment time
    2. add a folder to leverage `testthat` package for running error check when building packages
-
+   3. add a function  `gen_ospfs` to generate correlated PFS and OS
 
 ## Version 0.1.2
 
