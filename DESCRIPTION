@@ -1,24 +1,19 @@
-Package: MethodDev
+Package: ShinyApp4CT
 Type: Package
-Title: Dosen't have a title 
-Version: 0.1.3
-Author: Bin Zhuo
-Maintainer: Bin Zhuo <bzhuo@amgen.com>
-Description: This package is developed to maintain commonly used functions that 
-    I write for the work at simulation team in Design and Innovation team within Amgen.
-License: What license is it under?
+Title: R shiny tools for clinical trials
+Version: 0.1.0
+Authors@R:
+    c(person(given = "Bin",
+             family = "Bu Bing",
+             role = c("aut", "cre"),
+             email = "rickyb.zh@gmail.com")
+             )
+Maintainer: bin_bu_bing <rickyb.zh@gmail.com>
+Description: This package documents the R shiny tools I develop over the years through my working experience.
+License: MIT + file LICENSE
 Encoding: UTF-8
-RdMacros: Rdpack
-Imports: 
-    Rdpack,
-    dplyr,
-    foreach,
-    gsDesign,
-    baseUtility
 LazyData: true
-RoxygenNote: 6.1.1
 Suggests: 
-    testthat,
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.1.2

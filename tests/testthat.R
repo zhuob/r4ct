@@ -1,4 +1,4 @@
 library(testthat)
-library(MethodDev)
+library(pkgShinyApp)
 
-test_check("MethodDev")
+test_check("pkgShinyApp")
