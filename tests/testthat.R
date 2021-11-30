@@ -1,4 +1,4 @@
 library(testthat)
-library(pkgShinyApp)
+library(ShinyApp4CT)
 
-test_check("pkgShinyApp")
+test_check("ShinyApp4CT")

@@ -21,13 +21,9 @@ devtools::check()
 Sys.getenv("PATH")
 #Sys.setenv(PATH = "C:/texlive/2016/bin/win32")
 devtools::build(manual = T)
-# devtools::install_local("../beverage_1.2.2.tar.gz", dependencies = NA, upgrade = "never")
-# devtools::install_git("https://gitlab-cfdamodelingandsimulation.devops.amgen.com/bzhuo/beverage.git", ref = "dev",
-#                       credentials = git2r::cred_user_pass("bzhuo", getPass::getPass()))
-install.packages("C:/Users/bzhuo/Box Sync/projects/method_development/ShinyApp4CT_0.1.0.tar.gz", repos = NULL, type = "source")
 
 ## generate the help manual.
-pack <- "ShinyApp4CT"
+pack <- "shinyapps4clinicaltrial"
 path <- find.package(pack)
 if (file.exists(paste0(pack, ".pdf"))) {file.remove(paste0(pack, ".pdf"))}
 

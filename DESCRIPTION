@@ -1,4 +1,4 @@
-Package: ShinyApp4CT
+Package: shinyapps4clinicaltrial
 Type: Package
 Title: R shiny tools for clinical trials
 Version: 0.1.0
@@ -13,6 +13,8 @@ Description: This package documents the R shiny tools I develop over the years t
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    shiny
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
