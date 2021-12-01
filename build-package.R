@@ -2,14 +2,56 @@ rm(list = ls())
 library(devtools)
 library(roxygen2)
 
-## create vignette
-# devtools::use_vignette("my-vignette")
-# devtools::use_data(CODES, internal = T)
-## Create testthat
-## only run once the following
-# devtools::use_testthat()
-## run test cases of functions
-# options(testthat.output_file = "test-out.xml")
+## see reference here https://www.r-bloggers.com/2018/08/developing-r-packages-with-usethis-and-gitlab-ci-part-i/
+################ add license ###################################################
+#                                                                              #
+usethis::use_mit_license("Bling Bling")                                        #
+#                                                                              #
+################### add test data ##############################################
+usethis::use_data_raw("treatment-data")                                        # 
+usethis::use_data(treatment)                                                   #  
+# Since this data will be accessible to users of the package, it must be documented. 
+usethis::use_r("data")                                                         #   
+# Then add the documentation for the treatment data set to that script.        #   
+#                                                                              #
+################ add test cases ################################################
+#  create testthat structure                                                   #
+usethis::use_testthat()                                                        #
+usethis::use_test("mtpi2_fun")                                                 #
+#                                                                              #
+#                                                                              #
+#         The code above only needs to run once                                #
+#                  at package initiation step                                  # 
+################################################################################
+
+################### add dependency packages ####################################
+usethis::use_pipe()
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# add all of required packages that you are forcibly installing, here
+#  Use NA for package version if you don't care what version is installed
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+import_packages <- list(
+              "readr"       = NULL, 
+              "tidyr"       = "1.0.0", 
+              "stats"       = NULL, 
+              "shiny"       = NULL, 
+              "ggplot2"     = NULL, 
+              "dplyr"       = NULL, 
+              "stringr"     = NULL
+              )
+
+import_packages <- setNames(lapply(sort(names(import_packages)), 
+                      FUN = function(n) import_packages[[n]]), sort(names(import_packages)))
+
+# for required packages
+for(k in 1:length(import_packages)){
+  usethis::use_package(names(import_packages)[k], type = "Imports", min_version = import_packages[[k]])
+}
+
+# for suggested packages
+usethis::use_package("DT", type = "Suggests", min_version = NULL)
+
+################ Check and test ################################################
 devtools::load_all()
 devtools::test()
 # testthat::test_dir("tests/", reporter = "junit")

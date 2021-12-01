@@ -21,7 +21,8 @@
 #' @return
 #' @export
 #'
-#' @examples
+# #' @examples
+#' @keywords internal
 hello_histgram <- function(n){
   hist(runif(n))
 }

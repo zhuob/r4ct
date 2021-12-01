@@ -15,3 +15,4 @@ hello_histgram(n)
 \description{
 Create a function for building shiny app packages
 }
+\keyword{internal}
