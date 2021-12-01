@@ -1,4 +1,4 @@
-# shinyapp4clinicaltrial
+# shinyapps4clinicaltrial
 
 
-This is a package for shiny apps
+This is a package for all the shiny apps I have worked so far
