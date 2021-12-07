@@ -1,7 +1,7 @@
 Package: shinyapps4clinicaltrial
 Type: Package
 Title: R shiny tools for clinical trials
-Version: 0.2.0
+Version: 0.2.1
 Authors@R:
     c(person(given = "bling",
              family = "bling",
