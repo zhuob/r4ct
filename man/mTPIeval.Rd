@@ -65,9 +65,6 @@ mTPIeval(
 
 \item{dslv_start}{}
 }
-\value{
-
-}
 \description{
 Run simu
 }

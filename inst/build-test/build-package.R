@@ -11,7 +11,8 @@ usethis::use_mit_license("Bling Bling")                                        #
 usethis::use_data_raw("treatment-data")                                        # 
 usethis::use_data(treatment)                                                   #  
 # Since this data will be accessible to users of the package, it must be documented. 
-usethis::use_r("data")                                                         #   
+usethis::use_r("click_data")    
+usethis::use_r("risk_table")    
 # Then add the documentation for the treatment data set to that script.        #   
 #                                                                              #
 ################ add test cases ################################################
@@ -23,6 +24,8 @@ usethis::use_test("mtpi2_fun")                                                 #
 #         The code above only needs to run once                                #
 #                  at package initiation step                                  # 
 ################################################################################
+usethis::use_roxygen_md()
+usethis::use_lifecycle()
 
 ################### add dependency packages ####################################
 usethis::use_pipe()
@@ -31,13 +34,15 @@ usethis::use_pipe()
 #  Use NA for package version if you don't care what version is installed
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 import_packages <- list(
-              "readr"       = NULL, 
-              "tidyr"       = "1.0.0", 
-              "stats"       = NULL, 
-              "shiny"       = NULL, 
-              "ggplot2"     = NULL, 
-              "dplyr"       = NULL, 
-              "stringr"     = NULL
+              "readr"          = NULL, 
+              "tidyr"          = "1.0.0", # for use of pivot_longer
+              "shiny"          = NULL, 
+              "ggplot2"        = NULL, 
+              "dplyr"          = NULL, 
+              "stringr"        = NULL,
+              "shinydashboard" = NULL, 
+              "tibble"         = NULL, 
+              "Rdpack"         = NULL  # for reference
               )
 
 import_packages <- setNames(lapply(sort(names(import_packages)), 
@@ -49,7 +54,20 @@ for(k in 1:length(import_packages)){
 }
 
 # for suggested packages
-usethis::use_package("DT", type = "Suggests", min_version = NULL)
+suggest_packages <- list(
+        "survminer"          = NULL, 
+        "DT"                 = NULL, 
+        "markdown"           = NULL, 
+        "knitr"              = NULL
+)
+suggest_packages <- setNames(lapply(sort(names(suggest_packages)), 
+                                   FUN = function(n) suggest_packages[[n]]), sort(names(suggest_packages)))
+
+for(k in 1:length(suggest_packages)){
+  usethis::use_package(names(suggest_packages)[k], type = "Suggests", min_version = suggest_packages[[k]])
+}
+
+usethis::use_version()
 
 ################ Check and test ################################################
 devtools::load_all()

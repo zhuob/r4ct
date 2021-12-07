@@ -1,7 +1,7 @@
 Package: shinyapps4clinicaltrial
 Type: Package
 Title: R shiny tools for clinical trials
-Version: 0.1.0
+Version: 0.2.0
 Authors@R:
     c(person(given = "bling",
              family = "bling",
@@ -16,16 +16,24 @@ LazyData: true
 Imports: 
     dplyr,
     ggplot2,
+    lifecycle,
     magrittr,
+    Rdpack,
     readr,
     shiny,
-    stats,
+    shinydashboard,
     stringr,
+    tibble,
     tidyr (>= 1.0.0)
 Suggests: 
+    survminer,
     DT,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    knitr,
+    markdown
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
+RdMacros: Rdpack 
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)
+Roxygen: list(markdown = TRUE)

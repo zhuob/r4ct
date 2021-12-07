@@ -31,14 +31,15 @@ Bayes Decision Table for mTPI2
 }
 \details{
 For each cohort size and number of DLTs observed, calculate the
-  Bayes posterior probability, based on which a decision table is generated
-  using mTPI2 method.
+Bayes posterior probability, based on which a decision table is generated
+using mTPI2 method.
 }
 \examples{
-mtpi2_decision_plot(nmax = 30, cocap = 12, tolerance1 = 0.05, tolerance2 = 0.05, a = 1, b = 1, tox = 0.95, target = 0.3)
+mtpi2_decision_plot(nmax = 30, cocap = 12, tolerance1 = 0.05, tolerance2 =
+0.05, a = 1, b = 1, tox = 0.95, target = 0.3)
 }
 \references{
 {
-  \insertRef{guo2017bayesian}{shinyapp4clinicaltrial}
+\insertRef{guo2017bayesian}{shinyapps4clinicaltrial}
 }
 }

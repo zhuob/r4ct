@@ -28,5 +28,22 @@ launch_app <- function(appname){
   # find and launch the app
   app_dir <- system.file("shiny-examples", appname, package = "shinyapps4clinicaltrial")
   
-  shiny::runApp(app_dir, display.mode = "normal")
+  
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Source all module files and store the code in a 'modules' environment object
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  file_to_source <- list.files(app_dir)
+  # depending on the structure of shiny app, choose different ways to launch it
+  if (sum(c("server.R", "ui.R") %in% file_to_source) == 2){
+    # if there are separate server and ui part
+    shiny::runApp(app_dir, display.mode = "normal")
+    
+  } else if("app.R" %in% file_to_source){
+    # if the ui and server are both in "app.R"
+    shiny::runApp(paste0(app_dir, "/", "app.R"), display.mode = "normal")
+  } else{
+    error_msg <- paste("The folder", app_dir, " should have least one of the following R files (Note: file name is case sensitive) for the app to run : \n 1.server.R and ui.R \n 2.app.R" )
+    stop(error_msg)
+  }
+  
 }

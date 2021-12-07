@@ -23,7 +23,7 @@
 #' @param p.ud 
 #' @param dslv_start 
 #'
-#' @return
+# #' @return
 #' @keywords internal
 # #' @export
 #'
@@ -33,6 +33,11 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
                   nds2=nds2,Escf=Escf,apr=apr,bpr=bpr,p.ud=p.ud, 
                   dslv_start = 5)	
 {
+  
+  
+#   mTPIeval: no visible binding for global variable 'B0'
+  B0 <- cohs0 <- ncohd0 <- pt1 <- pt2 <- NULL
+  
   trsk=tdose; trsk2=c(0,trsk,1)				## True toxicity by doses
   hzr =-log(1-trsk2); hzd=diff(c(0,hzr))				## hazard increments by doses
   Rest33 =array(0,c(B,5));	Resd33=array(0,c(B,nds,2))
@@ -43,7 +48,7 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
   for (ib in 1:B)	{
   #  set.seed(ib)
     # print(ib)
-    dlti=apply(matrix(rbinom(cohs*ncoh1*nds2,1,1-exp(-hzd)),nds2,cohs*ncoh1),2,cumsum)
+    dlti=apply(matrix(stats::rbinom(cohs*ncoh1*nds2,1,1-exp(-hzd)),nds2,cohs*ncoh1),2,cumsum)
     dlti[dlti>=1]=1						## DLT by subjects w/ dummy doses(2) & cohort(1)
     dltc=apply(array(dlti,c(nds2,cohs,ncoh1)),c(1,3),sum)	## DLT summary by risks and cohorts
     ## 3+3
@@ -132,7 +137,7 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
           if (dslv >2)	{
             if (sdsT[dslv-1,2]>=ncohd) {icoh=ncoh1} else {dslv=dslv-1}	
           }	else	{
-            p.v1=1-pbeta(pt,apr+sdsT[dslv,1],bpr+sdsT[dslv,2]-sdsT[dslv,1])
+            p.v1=1-stats::pbeta(pt,apr+sdsT[dslv,1],bpr+sdsT[dslv,2]-sdsT[dslv,1])
             # update this part to account for the case where cohort 1 has 12, but p.v1 < p.ud
             # original version ----------------------------
             # if (p.v1>=p.ud) {icoh=ncoh1}	
@@ -171,19 +176,19 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
     ### original version------------------------------------------------
     # #w.min=which(abs(tdi)==min(abs(tdi)));	minii=sign(tdi[w.min])
     # #if (max(minii)>=0) mtd2=w.min[which.max(minii)]
-    # #if (max(minii)<0) mtd2=tail(w.min,1)
+    # #if (max(minii)<0) mtd2=utils::tail(w.min,1)
     # ########################################################5555
     # w.min=which(abs(abs(tdi)-min(abs(tdi)))<=0.000001);	minii=sign(tdi[w.min])
-    # if (max(minii)<0) mtd2=tail(w.min,1)
+    # if (max(minii)<0) mtd2=utils::tail(w.min,1)
     # if (min(minii)>=0) mtd2=w.min[which.min(minii)]
-    # if ((max(minii)>=0) & (min(minii)<0)) mtd2=tail(w.min[which(minii<0)],1)
+    # if ((max(minii)>=0) & (min(minii)<0)) mtd2=utils::tail(w.min[which(minii<0)],1)
     ##########################################################5555
     
     ### changed to ------------------------------------------
     w.min=which(abs(abs(tdi)-min(abs(tdi)))<=0.000001);	minii=sign(tdi[w.min])
-    if (max(minii)<0) mtd2=test_level[tail(w.min,1)]
+    if (max(minii)<0) mtd2=test_level[utils::tail(w.min,1)]
     if (min(minii)>=0) mtd2=test_level[w.min[which.min(minii)]]
-    if ((max(minii)>=0) & (min(minii)<0)) mtd2=test_level[tail(w.min[which(minii<0)],1)]
+    if ((max(minii)>=0) & (min(minii)<0)) mtd2=test_level[utils::tail(w.min[which(minii<0)],1)]
     
     ### end of change ------------------------------------------
     
@@ -192,7 +197,7 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
     RestTPI[ib,3]=sum(sdsT[2:mtd2,1])    # total number of dlts up to MTD
     RestTPI[ib,4]=sum(sdsT[2:mtd2,2])    # total number of subjects up to MTD
     RestTPI[ib,5]=mtd2 - 1                  # the dose limiting toxicity
-    RestTPI[ib,6]=tail(tdi,1)+pt
+    RestTPI[ib,6]=utils::tail(tdi,1)+pt
     ResdTPI[ib,,1:2]=sdsT[3:nds2-1,1:2]
     mtd2=mtd2-1
     ## orignial version -------------------------------
@@ -261,41 +266,41 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
   ### mTPI Summary per trial
   PerTR=as.data.frame(array(0,c(4,5)))
   ncoh.s=rowSums(ResdTPI[,,2])
-  PerTR[1,]=c(range(ncoh.s),median(ncoh.s),mean(ncoh.s),sd(ncoh.s))[c(1,3,4,2,5)]
+  PerTR[1,]=c(range(ncoh.s),stats::median(ncoh.s),mean(ncoh.s),stats::sd(ncoh.s))[c(1,3,4,2,5)]
   ntox.s=rowSums(ResdTPI[,,1])
-  PerTR[2,]=c(range(ntox.s),median(ntox.s),mean(ntox.s),sd(ntox.s))[c(1,3,4,2,5)]
+  PerTR[2,]=c(range(ntox.s),stats::median(ntox.s),mean(ntox.s),stats::sd(ntox.s))[c(1,3,4,2,5)]
   mds=sum(trsk<=pt)+1
   ##############################################3333
   if(mds<nds)  ncoh.s=apply(ResdTPI[,mds:nds,2],1,sum) 
   if(mds==nds) ncoh.s=ResdTPI[,mds,2] 
   if(mds>nds)  ncoh.s=rep(0,B)
-  PerTR[3,]=c(range(ncoh.s),median(ncoh.s),mean(ncoh.s),sd(ncoh.s))[c(1,3,4,2,5)]
+  PerTR[3,]=c(range(ncoh.s),stats::median(ncoh.s),mean(ncoh.s),stats::sd(ncoh.s))[c(1,3,4,2,5)]
   if(mds<nds)  ntox.s=apply(ResdTPI[,mds:nds,1],1,sum)
   if(mds==nds) ntox.s=ResdTPI[,mds,1]
   if(mds>nds)  ntox.s=rep(0,B)
   ##############################################3333
   #	ntox.s=rowSums(ResdTPI[,mds:nds,1])
-  PerTR[4,]=c(range(ntox.s),median(ntox.s),mean(ntox.s),sd(ntox.s))[c(1,3,4,2,5)]
+  PerTR[4,]=c(range(ntox.s),stats::median(ntox.s),mean(ntox.s),stats::sd(ntox.s))[c(1,3,4,2,5)]
   PerTR[,c(3,5)]=round(PerTR[,c(3,5)],2)
   
   ### 3+3 Summary per trial
   P33TR=as.data.frame(array(0,c(4,5)))
   ncoh.s=rowSums(Resd33[,,2])
-  P33TR[1,]=c(range(ncoh.s),median(ncoh.s),mean(ncoh.s),sd(ncoh.s))[c(1,3,4,2,5)]
+  P33TR[1,]=c(range(ncoh.s),stats::median(ncoh.s),mean(ncoh.s),stats::sd(ncoh.s))[c(1,3,4,2,5)]
   ntox.s=rowSums(Resd33[,,1])
-  P33TR[2,]=c(range(ntox.s),median(ntox.s),mean(ntox.s),sd(ntox.s))[c(1,3,4,2,5)]
+  P33TR[2,]=c(range(ntox.s),stats::median(ntox.s),mean(ntox.s),stats::sd(ntox.s))[c(1,3,4,2,5)]
   ################################################4444
   if(mds<nds)  ncoh.s=apply(Resd33[,mds:nds,2],1,sum) 
   if(mds==nds) ncoh.s=Resd33[,mds,2] 
   if(mds>nds)  ncoh.s=rep(0,B)
   #	ncoh.s=rowSums(Resd33[,mds:nds,2])
-  P33TR[3,]=c(range(ncoh.s),median(ncoh.s),mean(ncoh.s),sd(ncoh.s))[c(1,3,4,2,5)]
+  P33TR[3,]=c(range(ncoh.s),stats::median(ncoh.s),mean(ncoh.s),stats::sd(ncoh.s))[c(1,3,4,2,5)]
   if(mds<nds)  ntox.s=apply(Resd33[,mds:nds,1],1,sum) 
   if(mds==nds) ntox.s=Resd33[,mds,1] 
   if(mds>nds)  ntox.s=rep(0,B)
   ################################################4444
   #	ntox.s=rowSums(Resd33[,mds:nds,1])
-  P33TR[4,]=c(range(ntox.s),median(ntox.s),mean(ntox.s),sd(ntox.s))[c(1,3,4,2,5)]
+  P33TR[4,]=c(range(ntox.s),stats::median(ntox.s),mean(ntox.s),stats::sd(ntox.s))[c(1,3,4,2,5)]
   P33TR[,c(3,5)]=round(P33TR[,c(3,5)],2)
   ### Early termination
   Eterm=c(mean(RestTPI[,5]==0),mean(Rest33[,5]==0))
@@ -314,9 +319,10 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
 #'   Bayes posterior probability, based on which a decision table is generated
 #'   using mTPI2 method.
 #' @references{
-#'   \insertRef{guo2017bayesian}{shinyapp4clinicaltrial}
+#'   \insertRef{guo2017bayesian}{shinyapps4clinicaltrial}
 #' }
 #'   
+#' @importFrom Rdpack reprompt
 #' @import magrittr
 #' @param nmax Maximum Sample Size for the Trial
 #' @param cocap Cohort Cap, max number of subjects in a cohort
@@ -331,9 +337,14 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
 #' @export
 #'
 #' @examples
-#' mtpi2_decision_plot(nmax = 30, cocap = 12, tolerance1 = 0.05, tolerance2 = 0.05, a = 1, b = 1, tox = 0.95, target = 0.3)
+#' mtpi2_decision_plot(nmax = 30, cocap = 12, tolerance1 = 0.05, tolerance2 =
+#' 0.05, a = 1, b = 1, tox = 0.95, target = 0.3)
 mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, target)
 {
+  
+  #   no visible binding for global variable 'nsubj'
+  nsubj <- No.of.DLTs  <- ndlt <- decision <- NULL
+  
   mxn <- nmax
   mxn1 <- mxn+1						## max N
   ncohd0 <- cocap	
@@ -347,7 +358,7 @@ mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, t
   pvi <- unique(pvi[0<=pvi&pvi<=1]) 
   npvi <- length(pvi)
   pdel <- diff(pvi)									
-  pcat <- as.integer(cut(head(pvi,-1)+pdel/2,c(-1,pt1,pt2,2)))	## END of modification
+  pcat <- as.integer(cut(utils::head(pvi,-1)+pdel/2,c(-1,pt1,pt2,2)))	## END of modification
   
   apr <- a 
   bpr <- b					## hyper a b
@@ -362,7 +373,7 @@ mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, t
   bbet[bbet<=0]=999		## beta a b - 999 for not existing comb
   
   pbet=NULL										## START of modification for mTPI2
-  for(i in 1:npvi) pbet=cbind(pbet,c(pbeta(pvi[i],abet,bbet)))
+  for(i in 1:npvi) pbet=cbind(pbet,c(stats::pbeta(pvi[i],abet,bbet)))
   rowdiffpbet <- pbet[, 2:ncol(pbet)] - pbet[, 1:(ncol(pbet) - 1)]
   UPM0=t(t(rowdiffpbet)/pdel)
   UPM0=UPM0[,c(2:npvi-1,1,which.max(pvi==pt1),npvi-1)]	## preventing length(vector)=1
@@ -371,7 +382,7 @@ mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, t
   
   Escf=apply(UPM,1:2,which.max) 
   Escf[bbet==999]=0	## unit prob mass; esc, stay, de-esc
-  upr=1-pbeta(pt,abet,bbet) 
+  upr=1-stats::pbeta(pt,abet,bbet) 
   Udos=1*(Escf==3&upr>p.ud) ## unacceptable tox
   Escf=Escf+Udos; 
   
@@ -476,7 +487,7 @@ sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,
   pvi <- unique(pvi[0<=pvi&pvi<=1]) 
   npvi <- length(pvi)
   pdel <- diff(pvi)									
-  pcat <- as.integer(cut(head(pvi,-1)+pdel/2,c(-1,pt1,pt2,2)))	## END of modification
+  pcat <- as.integer(cut(utils::head(pvi,-1)+pdel/2,c(-1,pt1,pt2,2)))	## END of modification
   
   apr <- a 
   bpr <- b					## hyper a b
@@ -491,7 +502,7 @@ sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,
   bbet[bbet<=0]=999		## beta a b - 999 for not existing comb
   
   pbet=NULL										## START of modification for mTPI2
-  for(i in 1:npvi) pbet=cbind(pbet,c(pbeta(pvi[i],abet,bbet)))
+  for(i in 1:npvi) pbet=cbind(pbet,c(stats::pbeta(pvi[i],abet,bbet)))
   rowdiffpbet <- pbet[, 2:ncol(pbet)] - pbet[, 1:(ncol(pbet) - 1)]
   UPM0=t(t(rowdiffpbet)/pdel)
   
@@ -501,7 +512,7 @@ sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,
   
   Escf=apply(UPM,1:2,which.max) 
   Escf[bbet==999]=0	## unit prob mass; esc, stay, de-esc
-  upr=1-pbeta(pt,abet,bbet) 
+  upr=1-stats::pbeta(pt,abet,bbet) 
   Udos=1*(Escf==3&upr>p.ud) ## unacceptable tox
   Escf=Escf+Udos; 
   
@@ -553,9 +564,9 @@ estimate_dlt_isoreg = function(cohort_size, n_dlt, target){
   tdi <- Iso.e-target;
   w.min <- which(abs(abs(tdi)-min(abs(tdi)))<=0.000001);	
   minii <- sign(tdi[w.min])
-  if (max(minii)<0) MTDds <- tail(w.min,1)
+  if (max(minii)<0) MTDds <- utils::tail(w.min,1)
   if (min(minii)>=0) MTDds <- w.min[which.min(minii)]
-  if ((max(minii)>=0) & (min(minii)<0)) MTDds <- tail(w.min[which(minii<0)],1)
+  if ((max(minii)>=0) & (min(minii)<0)) MTDds <- utils::tail(w.min[which(minii<0)],1)
   mtd[MTDds] <- "MTD"
   raw.est <- round(raw.e,4) 
   Iso.est <- round(Iso.e,4)
