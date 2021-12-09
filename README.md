@@ -1,7 +1,7 @@
 # shinyapps4clinicaltrial
 
 <!-- badges: start -->
-[![R build status](https://github.com/r-lib/pkgbuild/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/pkgbuild/actions)
+[![R build status](https://github.com/r-lib/R4ClinicalTrial/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/R4ClinicalTrial/actions)
 
 <!-- badges: end --> 
 
