@@ -5,7 +5,11 @@ library(roxygen2)
 ## see reference here https://www.r-bloggers.com/2018/08/developing-r-packages-with-usethis-and-gitlab-ci-part-i/
 ################ add license ###################################################
 #                                                                              #
-usethis::use_mit_license("Bling Bling")                                        #
+usethis::use_mit_license("Bling Bling")            
+usethis::use_lifecycle()
+
+
+#
 #                                                                              #
 ################### add test data ##############################################
 usethis::use_data_raw("treatment-data")                                        # 

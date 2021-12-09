@@ -13,7 +13,7 @@ launch_app(appname)
 a shiny app interface
 }
 \description{
-Run the shiny app with an example
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
  # helpful instructions here https://deanattali.com/2015/04/21/r-package-shiny-app/

@@ -1,6 +1,9 @@
 
 
 #' Run the shiny app with an example
+#'
+#' @description 
+#' `r lifecycle::badge("experimental")` 
 #' 
 #' @param appname the example shiny app to be launched
 #' @import shiny
@@ -8,10 +11,12 @@
 #' @export  
 #'
 #' @examples
+#'  
 #'  # helpful instructions here https://deanattali.com/2015/04/21/r-package-shiny-app/
-#' 
+#' launch_app(appname = "bayes-go-nogo")
 launch_app <- function(appname){
 
+  lifecycle::signal_stage("experimental", "launch_app()")
   
   # locate all the shiny examples that exist
   valid_examples <- list.files(system.file("shiny-examples", package = "shinyapps4clinicaltrial"))
