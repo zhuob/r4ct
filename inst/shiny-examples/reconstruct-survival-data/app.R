@@ -22,7 +22,6 @@ for (util_file in dir(".", pattern = "-fun.R", full.names = TRUE)) {
 }
 
 
-# rmarkdown::render("test-html.Rmd", "all")
 
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

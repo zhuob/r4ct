@@ -67,7 +67,7 @@ for(k in 1:length(suggest_packages)){
   usethis::use_package(names(suggest_packages)[k], type = "Suggests", min_version = suggest_packages[[k]])
 }
 
-usethis::use_version()
+usethis::use_version("patch")
 
 ################ Check and test ################################################
 devtools::load_all()

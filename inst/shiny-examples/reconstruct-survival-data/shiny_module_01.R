@@ -9,51 +9,57 @@ module_01$icon        <- "toolbox"
 module_01$comp_01 <- new.env()
 
 module_01$comp_01$ui <- function(){
-    fluidPage(
-      
-      fluidRow(
-        column(6, 
-               fileInput("file1", "Upload Click Data (CSV)", 
-                         multiple = TRUE,
-                         accept = c("text/csv",
-                                    "text/comma-separated-values,text/plain",
-                                    ".csv"))
-               ),
-        
-        column(6, 
-               fileInput("file2", "Upload Risk Table (CSV)", 
-                         multiple = TRUE,
-                         accept = c("text/csv",
-                                    "text/comma-separated-values,text/plain",
-                                    ".csv"))
-               
-               )
-      ),
+  fluidPage(
     
-      
-      h3("Show Infile Data"), 
-      tabsetPanel(
-        tabPanel("Click Data", DT::dataTableOutput("click_data")), 
-        tabPanel("Risk Table", DT::dataTableOutput("risk_table"))
+    fluidRow(
+      column(6, 
+             fileInput("file1", "Upload Click Data (CSV)", 
+                       multiple = TRUE,
+                       accept = c("text/csv",
+                                  "text/comma-separated-values,text/plain",
+                                  ".csv"))
       ),
       
-      selectInput(inputId = "controlArm", label = "Identify Control Arm", 
-                  choices = ""),
-      hr() 
-      
+      column(6, 
+             fileInput("file2", "Upload Risk Table (CSV)", 
+                       multiple = TRUE,
+                       accept = c("text/csv",
+                                  "text/comma-separated-values,text/plain",
+                                  ".csv"))
+             
       )
+    ),
+    
+    
+    h3("Load from example data?"),
+    checkboxInput(inputId = "load_example_data", label = "Yes"),
+    
+    
+    
+    h3("Show Infile Data"), 
+    tabsetPanel(
+      tabPanel("Click Data", DT::dataTableOutput("click_data")), 
+      tabPanel("Risk Table", DT::dataTableOutput("risk_table"))
+    ),
+    
+    selectInput(inputId = "controlArm", label = "Identify Control Arm", 
+                choices = ""),
+    hr() 
+    
+  )
 }
 
 
 module_01$comp_01$server <- function(input, output, session, data){
   
   ## use reactive so that the output can be passed as input for other modules
+
   df1_infile <- reactive({
-    if(is.null(input$file1)){
-      return(NULL)
-    } else{
+    
+      req(input$file1)
       readr::read_csv(input$file1$datapath)
-    }
+      
+  
   })
   
   output$click_data <- DT::renderDataTable({
@@ -61,11 +67,10 @@ module_01$comp_01$server <- function(input, output, session, data){
   })
   
   df2_infile <- reactive({
-    if(is.null(input$file2)){
-      return(NULL)
-    } else{
-      readr::read_csv(input$file2$datapath)
-    }
+    
+    req(input$file2)
+    readr::read_csv(input$file2$datapath)
+    
   })
   
   output$risk_table <- DT::renderDataTable({
@@ -95,12 +100,12 @@ module_01$comp_02$ui <- function(){
   
   shiny::fluidPage(
     h3("Convert KM-curve to Subject Level Data"),
-   
+    
     fluidRow(column(width = 6, align = "left", 
                     actionButton(inputId = "Calculate", label = "Reconstruct")),
              column(width = 6, align = "right", 
                     downloadButton(outputId = "DownloadData", label = "Download Data"))
-             ),
+    ),
     
     DT::dataTableOutput("recoverData"),
     
@@ -119,24 +124,24 @@ module_01$comp_02$ui <- function(){
     
     fluidRow(column(width = 6, align = "left", 
                     actionButton(inputId = "showPlot", label = "Run Analysis")),
-              column(width = 6, align = "right", 
-                     downloadButton(outputId = "DownloadFigure", label = "Download Figure"))
-             ),
+             column(width = 6, align = "right", 
+                    downloadButton(outputId = "DownloadFigure", label = "Download Figure"))
+    ),
     
     
     # # figure size adjustment
     # fluidRow(column(width = 6, align = "left", 
     #                 sliderInput(inputId = "figh", label = "Fig height (in Pixel)", 
     #                             min = 100, max = 1000, value = 500))),
-  
-
+    
+    
     tabsetPanel(
       tabPanel("Table Summary",   DT::dataTableOutput("showResult")),
       tabPanel("KM Plot", plotOutput("showKMcurve"))
-  )
-  
-     
-  
+    )
+    
+    
+    
     
   )
 }
@@ -147,9 +152,9 @@ module_01$comp_02$server <- function(input, output, session, data){
   
   
   v <- reactiveValues()
-    
-  observeEvent(input$Calculate, {
   
+  observeEvent(input$Calculate, {
+    
     req(input$file1);
     req(input$file2);
     
@@ -201,8 +206,8 @@ module_01$comp_02$server <- function(input, output, session, data){
     for(i in 1:length(arm_trt)){
       df_analysis <- df_temp %>% filter(arm %in% c(arm_control, arm_trt[i]))
       result0 <- run_survival(time = df_analysis$time, censor = df_analysis$censor, 
-                             arm  = df_analysis$arm,  control = arm_control) %>%
-                 mutate(arm = arm_trt[i]) %>% select(arm, everything())
+                              arm  = df_analysis$arm,  control = arm_control) %>%
+        mutate(arm = arm_trt[i]) %>% select(arm, everything())
       
       result <- dplyr::bind_rows(result, result0)
     }

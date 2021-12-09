@@ -9,25 +9,22 @@ output:
     theme: spacelab
     toc: yes
     toc_depth: 1
-bibliography: myref.bib
+bibliography: REFERENCES.bib
 link-citations: yes
 ---
 
 
 # Can't Wait Trying?
 
-```{r, echo = FALSE, message = FALSE, warning=FALSE, child="part1.Rmd"}
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
 library(shinyapps4clinicaltrial)
-app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "shinyapps4clinicaltrial")
-x1 <- file.path(app_dir, "www/data_all_arms.csv")  
-ex_df1 <- readr::read_csv(x1)
-head(ex_df1)
-ex_df2 <- readr::read_csv("data/data_nar.csv")
+library(dplyr); library(magrittr)
+ex_df1 <- shinyapps4clinicaltrial::click_data
+ex_df2 <- shinyapps4clinicaltrial::risk_table
 ex_df3 <- reconstruct_survival_data(data_click = ex_df1, data_nar = ex_df2)
 arms <- unique(ex_df3$arm)
 ex_df3 <- ex_df3 %>% mutate(arm = factor(arm, levels = arms[c(2, 3, 1)])) %>% arrange(arm)
 ```
-
 
 At this point, you might be eager to try reconstructing survival data with a KM
 curve in which you are particularly interested. 
@@ -156,7 +153,7 @@ knitr::include_graphics("www/click3.png")
 ```
 
 # Bugs and Issue Report
-Should you experience any error message, or you have any suggestion to improve this shiny app, please do not hesitate to contact **Bin Zhuo** <bzhuo@amgen.com> or **Tony Jiang** <xunj@amgen.com> at Modeling and Simulation Team, Design & Innovation. 
+Should you experience any error message, or you have any suggestion to improve this shiny app, please do not hesitate to contact **Bin Zhuo** <bzhuo@amgen.com> at Modeling and Simulation Team, Design & Innovation. 
 
 # Reference 
  
