@@ -30,7 +30,8 @@ Suggests:
     DT,
     testthat (>= 3.0.0),
     knitr,
-    markdown
+    markdown,
+    covr
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
 RdMacros: Rdpack 

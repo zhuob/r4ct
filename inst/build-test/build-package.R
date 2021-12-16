@@ -72,6 +72,9 @@ for(k in 1:length(suggest_packages)){
 
 ## add check state on README see https://stackoverflow.com/questions/63140363/how-to-add-r-cmd-check-state-on-readme-at-github
 usethis::use_github_action_check_standard()
+usethis::use_coverage()
+usethis::use_cran_badge()
+usethis::use_lifecycle_badge("experimental")
 
 usethis::use_version("patch")
 
