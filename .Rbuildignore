@@ -3,3 +3,4 @@
 ^renv$
 ^LICENSE\.md$
 ^data-raw$
+^\.github$

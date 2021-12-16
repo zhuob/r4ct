@@ -6,8 +6,7 @@ library(roxygen2)
 ################ add license ###################################################
 #                                                                              #
 usethis::use_mit_license("Bling Bling")            
-usethis::use_lifecycle()
-
+usethis::use_vignette()
 
 #
 #                                                                              #
@@ -70,6 +69,9 @@ suggest_packages <- setNames(lapply(sort(names(suggest_packages)),
 for(k in 1:length(suggest_packages)){
   usethis::use_package(names(suggest_packages)[k], type = "Suggests", min_version = suggest_packages[[k]])
 }
+
+## add check state on README
+usethis::use_github_action_check_standard()
 
 usethis::use_version("patch")
 
