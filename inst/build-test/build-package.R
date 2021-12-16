@@ -72,11 +72,16 @@ for(k in 1:length(suggest_packages)){
 
 ## add check state on README see https://stackoverflow.com/questions/63140363/how-to-add-r-cmd-check-state-on-readme-at-github
 usethis::use_github_action_check_standard()
+# https://www.r-bloggers.com/2017/06/how-to-add-code-coverage-codecov-to-your-r-package/
 usethis::use_coverage()
+covr::codecov(token = "72a9bba5-c860-41f7-919b-120efff6a776")
+
 usethis::use_cran_badge()
 usethis::use_lifecycle_badge("experimental")
 
 usethis::use_version("patch")
+
+
 
 ################ Check and test ################################################
 devtools::load_all()
