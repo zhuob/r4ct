@@ -70,7 +70,7 @@ for(k in 1:length(suggest_packages)){
   usethis::use_package(names(suggest_packages)[k], type = "Suggests", min_version = suggest_packages[[k]])
 }
 
-## add check state on README
+## add check state on README see https://stackoverflow.com/questions/63140363/how-to-add-r-cmd-check-state-on-readme-at-github
 usethis::use_github_action_check_standard()
 
 usethis::use_version("patch")
