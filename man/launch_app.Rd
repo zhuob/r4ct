@@ -16,6 +16,7 @@ a shiny app interface
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
+ 
  # helpful instructions here https://deanattali.com/2015/04/21/r-package-shiny-app/
-
+launch_app(appname = "bayes-go-nogo")
 }

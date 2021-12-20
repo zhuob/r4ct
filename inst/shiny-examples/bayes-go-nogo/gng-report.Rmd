@@ -1,0 +1,81 @@
+#
+
+This is the output. 
+
+In this document, Using "Predictive Probability", the simulation setting and
+summaries are listed below.
+
+
+# Decision Table 
+## Parameter Setup 
+
+ |Description                        | Input Value|
+ |-----------------------------------|:-----| 
+ |First interim analysis (IA) sample size   |  `r input$nmax[1]`
+ |Maximum number of subjects to be enrolled | `r input$nmax[2]`
+ |After the first interim analysis (IA), the number of subjects required for subsequent IAs | `r input$groupsize`
+ | Lowest Reference Value (LRV) | `r input$px[1]`
+ | Target Value (TV) | `r input$px[2]`
+ | $\theta_1$ Final Go Criteria $P(p > LRV)>\theta_1$| `r input$theta1`|
+ | $\theta_2$ Final No Go Criterion $P(p< TV)\leq \theta_2$| `r input$theta2`|
+ | $\theta_3$ S.t. Pred. $P(GO)>\theta_3$| `r input$theta3`|
+ | $\theta_4$ S.t. Pred. $P(No~GO)>\theta_4$| `r input$theta4`|
+ 
+
+## Priors
+
+The priors for calculating Bayes posterior probability is $\beta(a, b)$ where 
+a =  `r input$a` and b =  `r input$b`.
+ 
+
+## Decision Table Figure 
+
+```{r, echo = FALSE, warning=FALSE}
+gngplot(pptab(), input$groupsize)
+```
+
+# Simulation Summary 
+
+## Simulation Input 
+
+  | Description                      | Input Value|
+  |----------------------------------|:-----------|
+  | Number of simulations            | `r input$nsim`|
+  | True ORRs for Simulations (separated by ',')| `r input$orrtx`|
+  | Which Case to plot               | `r input$case` |
+  
+  
+## Go/No Go probabilities by Interim 
+```{r, echo = FALSE, warning=FALSE}
+plotsim(psim(), input$px[1], input$px[2], input$case, input$lgdpos)
+
+```
+
+## Operating Characteristics 
+```{r, echo = FALSE, warning=FALSE}
+ psim1= tsim()
+
+kable_format <- switch(input$report_format, PDF = "latex", HTML = "html", WORD = "simple")
+    
+    psim1 %>%  knitr::kable(kable_format, align = rep("c", 11)) %>% 
+      kable_styling("striped", position = "center") %>%
+      add_header_above(c(" " = 1, "Efficacy" = 2, "Futility" = 2, " " = 2,
+                         "Efficacy Decision Only" = 2,
+                         "Futility Stopping Only" = 2)) %>% 
+      column_spec(c(2, 3, 6:9), bold = TRUE, color = "purple") %>%
+      column_spec(1:ncol(psim1), width = "5em") %>%
+      #column_spec(1, width = "40em") %>%
+    add_footnote(label =
+                   c(paste("Criteria: Target Value (TV) = ", input$px[2]*100, "%; ", 
+                           "Lower Reference Value (LRV) = ", input$px[1]*100,
+                           "%; Go: Pr(ORR > LRV) > ", input$theta1*100,
+                           "%; NoGo: Pr(ORR > TV) < ", input$theta2*100, "%;", sep = ""),
+                     paste("Efficacy: PP(Go) > ", input$theta3*100,
+                           "%); Futility: PP(NoGo) > ", input$theta4*100, "%); ", 
+                           "Frequency: ", input$groupsize,
+                           " Subjects; BM ORR: Benchmark Objective Response Rate.", sep = "")
+                   ), notation = "none")
+```
+
+  
+
