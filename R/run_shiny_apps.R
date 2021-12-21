@@ -13,7 +13,7 @@
 #' @examples
 #'  
 #'  # helpful instructions here https://deanattali.com/2015/04/21/r-package-shiny-app/
-#' launch_app(appname = "bayes-go-nogo")
+#' # launch_app(appname = "mTPI2")
 launch_app <- function(appname){
 
   lifecycle::signal_stage("experimental", "launch_app()")
