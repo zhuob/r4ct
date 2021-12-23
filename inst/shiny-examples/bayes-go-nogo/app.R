@@ -83,13 +83,13 @@ ui <- tagList(
     dashboardSidebar(
       sidebarMenu(
         menuItem(modules$module_01$name, tabName = modules$module_01$id, 
-                 icon = icon(modules$module_01$icon))
+                 icon = icon(modules$module_01$icon)),
         # menuItem(modules$module_03$name, tabName = modules$module_03$id, 
         #         icon = icon(modules$module_03$icon)),
         # menuItem(modules$module_04$name, tabName = modules$module_04$id, 
         #         icon = icon(modules$module_04$icon)),
-        # menuItem(modules$module_02$name, tabName = modules$module_02$id, 
-        #          icon = icon(modules$module_02$icon))
+        menuItem(modules$module_02$name, tabName = modules$module_02$id,
+                 icon = icon(modules$module_02$icon))
       )
     ),
     dashboardBody(
@@ -104,18 +104,18 @@ ui <- tagList(
             #modules$module_01$comp_04$ui(),
             #modules$module_01$comp_02$ui()
           )
-        )# ,
+        ),
         
         #+++++++++++++++++++++++++++++++++++++
         # Module 02
         #+++++++++++++++++++++++++++++++++++++
-        # tabItem(
-        #   tabName = modules$module_02$id, verticalLayout(
-        #     modules$module_02$comp_01$ui()
-        #     #modules$module_02$comp_02$ui()#,
-        #     #modules$module_02$comp_03$ui()
-        #   )
-        # )
+        tabItem(
+          tabName = modules$module_02$id, verticalLayout(
+            modules$module_02$comp_01$ui()
+            #modules$module_02$comp_02$ui()#,
+            #modules$module_02$comp_03$ui()
+          )
+        )
 
         # ------------------------------------------------        
       )

@@ -93,12 +93,12 @@ module_01$comp_01$ui <- function(){
                                              plotOutput("plot2")), 
                                     tabPanel("Overall Operating Characteristics", 
                                              tableOutput("table2"), 
-                                             tags$br(), 
+                                             tags$br()#, 
                                              
-                                             h3("Download Simulation Report"), 
-                                             downloadButton(outputId = "gng_report", class = "bright", icon = icon("cloud-download-alt")), 
-                                             radioButtons(inputId = "report_format", label = "Choose a Format", choices = c("HTML", "PDF", "WORD"), selected = "HTML")
-                                          
+                                             # h3("Download Simulation Report"), 
+                                             # downloadButton(outputId = "gng_report", class = "bright", icon = icon("cloud-download-alt")), 
+                                             # radioButtons(inputId = "report_format", label = "Choose a Format", choices = c("HTML", "PDF", "WORD"), selected = "HTML")
+                                             # 
                                              ))
                       )
              )
@@ -107,7 +107,7 @@ module_01$comp_01$ui <- function(){
 
 module_01$comp_01$server <- function(input, output, session, data){
 
-  pptab <- reactive({
+  pptab <<- reactive({
     nmax <- input$nmax[2]
     nmin <- input$nmax[1]
     p0 <- input$px[1]
@@ -117,7 +117,7 @@ module_01$comp_01$server <- function(input, output, session, data){
           a = input$a, b = input$b)
   })
 
-  psim <- eventReactive(input$simulate,{
+  psim <<- eventReactive(input$simulate,{
 
     or1 <- as.numeric(unlist(strsplit(input$orrtx, split = ",")))
     if (min(or1) > 0 & max(or1) < 1) {
@@ -125,7 +125,7 @@ module_01$comp_01$server <- function(input, output, session, data){
               nsim = input$nsim, pptab = pptab(), groupsize = input$groupsize)
     }})
 
-  tsim <- eventReactive(input$simulate,{
+  tsim <<- eventReactive(input$simulate,{
     or1 <- as.numeric(unlist(strsplit(input$orrtx, split = ",")))
     if (min(or1)>0 & max(or1)<1) {
       psim1 <- tabsim_new(orr = or1, nmin = input$nmax[1], nmax = input$nmax[2],
@@ -246,29 +246,29 @@ module_01$comp_01$server <- function(input, output, session, data){
     }
   )
 
-  output$gng_report <- downloadHandler(
-    filename = function(){
-      paste("gng-report", sep = ".",
-            switch(input$report_format, PDF = "pdf", HTML = "html", WORD = "docx")
-        )
-    },
-
-    content = function(file){
-      src <- normalizePath("gng-report.Rmd")
-
-      out_dir <- setwd(tempdir())
-      on.exit(setwd(out_dir))
-      file.copy(src, "gng-report.Rmd", overwrite = TRUE)
-
-      out <- rmarkdown::render("gng-report.Rmd",
-                               switch(input$report_format,
-                                      PDF = rmarkdown::pdf_document(),
-                                      HTML = rmarkdown::html_document(),
-                                      WORD = rmarkdown::word_document()))
-
-      file.rename(out, file)
-    }
-  )
+  # output$gng_report <- downloadHandler(
+  #   filename = function(){
+  #     paste("gng-report", sep = ".",
+  #           switch(input$report_format, PDF = "pdf", HTML = "html", WORD = "docx")
+  #       )
+  #   },
+  # 
+  #   content = function(file){
+  #     src <- normalizePath("gng-report.Rmd")
+  # 
+  #     out_dir <- setwd(tempdir())
+  #     on.exit(setwd(out_dir))
+  #     file.copy(src, "gng-report.Rmd", overwrite = TRUE)
+  # 
+  #     out <- rmarkdown::render("gng-report.Rmd",
+  #                              switch(input$report_format,
+  #                                     PDF = rmarkdown::pdf_document(),
+  #                                     HTML = rmarkdown::html_document(),
+  #                                     WORD = rmarkdown::word_document()))
+  # 
+  #     file.rename(out, file)
+  #   }
+  # )
   
   
   

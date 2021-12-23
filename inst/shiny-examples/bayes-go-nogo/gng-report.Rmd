@@ -1,40 +1,76 @@
-#
+---
+title: "Bayes Predictive Probability Summary Report"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
 
-This is the output. 
+# Introduction
 
-In this document, Using "Predictive Probability", the simulation setting and
-summaries are listed below.
+This app uses Bayes predictive probability to assist Go/No-Go decision making in
+a single arm Phase 2 trial, where the endpoint is binary. Traditional designs such 
+as Simon's two stage design suffer from (a) strict sample size guidelines, (b)
+undefined stopping boundaries in case of trial conduct deviation, and (c) no
+formal mechanism to stop the trial before the pre-determined sample size is
+reached, among others. By incorporating accumulating interim data into
+calculation of probability of trial success, this framework allows the
+user to continuously monitor the trial.
+
+## LRV and TV
+
+  + **Lower Reference Value (LRV)**: the smallest clinically meaningful treatment
+  effect (dignity line) for the development of a compound; it may be set to assume
+  no difference in cases where there is no alternative treatment or where
+  differences other than efficacy could be sufficient for commercialization, but
+  it is usually set at a mild efficacy effect in consideration of available
+  therapies.
+
+  + **Target Value (TV)**: desired effect to potentially establish the compound as
+  the treatment of choice.
 
 
-# Decision Table 
+## Decision Making
+
+Let $X \sim Binom(N, p)$ where $X$ is the number of patients responding
+to the treatment, and the total sample size is $N$. The parameter $p$ has a
+prior distribution $\beta(a, b)$. Assuming at the interim look, $x_1$ out of
+$n_1$ subjects responded to the treatment, then $p \sim \beta(a + x_1, b + n_1 -x_1)$ 
+is used to calculate the posterior probability of  $P(p > TV)$ or $P(p > LRV)$.
+
+  + **Go Criteria**: $P(p > LRV) > \theta_1$
+  + **No-Go Criteria**: $P(p > TV) <= \theta_2$
+  + **Go Decision**: $PP = \sum P(Future~Data)* \{P(p > LRV) > \theta_1\}>\theta_3$
+  + **No-Go Decision**: $PP = \sum P(Future~Data)* \{P(p > TV) <= \theta_2\}>\theta_4$ 
+
+
+
+
+# Simulation Summary
+
+The following values are captured from the user input for generating the report.
+
 ## Parameter Setup 
 
  |Description                        | Input Value|
  |-----------------------------------|:-----| 
- |First interim analysis (IA) sample size   |  `r input$nmax[1]`
- |Maximum number of subjects to be enrolled | `r input$nmax[2]`
- |After the first interim analysis (IA), the number of subjects required for subsequent IAs | `r input$groupsize`
- | Lowest Reference Value (LRV) | `r input$px[1]`
- | Target Value (TV) | `r input$px[2]`
+ |First interim analysis (IA) sample size   |  `r input$nmax[1]` |
+ |Maximum number of subjects to be enrolled | `r input$nmax[2]`  |
+ |After the first interim analysis (IA), the number of subjects required for subsequent IAs | `r input$groupsize`|
+ | Lowest Reference Value (LRV) | `r input$px[1]` |
+ | Target Value (TV) | `r input$px[2]`|
  | $\theta_1$ Final Go Criteria $P(p > LRV)>\theta_1$| `r input$theta1`|
  | $\theta_2$ Final No Go Criterion $P(p< TV)\leq \theta_2$| `r input$theta2`|
  | $\theta_3$ S.t. Pred. $P(GO)>\theta_3$| `r input$theta3`|
  | $\theta_4$ S.t. Pred. $P(No~GO)>\theta_4$| `r input$theta4`|
- 
+ | Beta Prior $a$ | `r input$a`|
+ | Beta Prior $b$ | `r input$b`|
 
-## Priors
 
-The priors for calculating Bayes posterior probability is $\beta(a, b)$ where 
-a =  `r input$a` and b =  `r input$b`.
- 
-
-## Decision Table Figure 
 
 ```{r, echo = FALSE, warning=FALSE}
 gngplot(pptab(), input$groupsize)
 ```
-
-# Simulation Summary 
 
 ## Simulation Input 
 
@@ -77,5 +113,40 @@ kable_format <- switch(input$report_format, PDF = "latex", HTML = "html", WORD =
                    ), notation = "none")
 ```
 
-  
 
+## Note for the output table: 
+
+| column                   |  Description                         | 
+| ----------------------   | :-----------------------------------:|
+|True ORR                  | Hypothesized Scenario for simulation | 
+| **Efficacy**                                                   ||
+|   Efficacy        | Prob. of claiming Efficacy           | 
+|   (% confirmed with the final) | Conditional on final success, Prob. of interim efficacy|
+| **Futility**                                                   ||
+|   Futility        | Prob. of claiming Futility           |
+|   (% confirmed with the final) | Conditional on final futility, Prob. of interim futility|
+| Expected N               | Expected sample size (with early termination for both success and futility)|
+| % Decision Prior to Final| Prob. of making a decision prior to Final| 
+|**Efficacy Decision Only** (early stop for efficacy only)                                      ||
+|   Expected N at Decision |  Average sample size at the time of decision made|
+|   % Decision Prior to Final| How likely is an early decision made?           |
+|**Futility Stopping Only** (early stop for futility only)                 ||
+|   Expected N at Decision |  Average sample size at the time of decision made|
+|   % Decision Prior to Final| How likely is an early decision made?           |
+
+
+
+
+# Reference 
+
+  + Frewer, P., Mitchell, P., Watkins, C., and Matcham, J. (2016)
+  Decision‐making in early clinical drug development. Pharmaceut. Statist., 15:
+  255–263
+
+  + Lalonde RL, Kowalski KG, Hutmacher MM, Ewy W, Nichols DJ, Milligan PA,
+  Corrigan BW, Lockwood PA, Marshall SA, Benincosa LJ, Tensfeldt TG, Parivar K,
+  Amantea M, Glue P, Koide H, Miller R. Model-based Drug Development. Clinical
+  Pharmacology & Therapeutics 2007; 82:21–32
+
+  + Lee, J. Jack, and Diane D. Liu. "A predictive probability design for phase
+  II cancer clinical trials." Clinical Trials 5, no. 2 (2008): 93-106.
