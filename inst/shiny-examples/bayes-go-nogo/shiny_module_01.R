@@ -1,5 +1,5 @@
 module_01             <- new.env()
-module_01$name        <- "Predictive Probability"
+module_01$name        <- "Decision Table"
 module_01$id          <- "shared_data"
 module_01$icon        <- "toolbox"
 
