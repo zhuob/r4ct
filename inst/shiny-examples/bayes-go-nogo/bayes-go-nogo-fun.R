@@ -117,20 +117,24 @@ predsim = function(orr, nmin, nmax, nsim, pptab, groupsize = 1){
 #'
 #' @param psimx an object returned by \code{\link{predsim}}
 #' @param p0 lower reference value 
-#' @param ptv 
-#' @param casen 
-#' @param lgdpos 
+#' @param ptv target value
+#' @param casen the scneario to be evaluated 
+#' @param lgdpos label size in the plot
 #'
 #' @return
 #' @export
 #'
 #' @examples
-plotsim <- function(psimx, p0, ptv,casen, lgdpos = 1){
+plotsim <- function(psimx, p0, ptv,casen, lgdpos = 5){
   
   psim1 <- data.frame(psimx)
-  casemax <- max(psim1$Case)
-  if (casen > casemax) {casen = casemax}
-  psim2 <- filter(psim1, Case == casen)
+
+  cases <- unique(psim1[, "True_P"])
+  if(!(casen %in% cases)){
+    stop(paste("Scenario", casen, "is not in the simulation"))
+  }
+  
+  psim2 <- filter(psim1, True_P == casen)
   p1 <- psim2$True_P[1]
   psim <- select(psim2, -c(1,2))
   nr <- nrow(psim)
@@ -161,7 +165,7 @@ plotsim <- function(psimx, p0, ptv,casen, lgdpos = 1){
           plot.title = element_text(face = "bold", size = 15)) + 
     labs(x = "Number of Subjects at Interim", y = "Probability", 
          title = title_name) + 
-    geom_text(label = psim3$prob, label.size = 0.5) + 
+    geom_text(label = psim3$prob, size = lgdpos) + 
     scale_color_manual(values = c("red", "darkgrey", "darkgreen"))
   
   return(res1)
