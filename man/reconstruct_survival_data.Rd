@@ -27,6 +27,6 @@ dat = reconstruct_survival_data(data_click = click_data, data_nar = risk_table)
 }
 \references{
 {
-\insertRef{guyot2012enhanced}{shinyapps4clinicaltrial}
+\insertRef{guyot2012enhanced}{r4ct}
 }
 }

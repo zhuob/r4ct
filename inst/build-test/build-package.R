@@ -37,15 +37,16 @@ usethis::use_pipe()
 #  Use NA for package version if you don't care what version is installed
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 import_packages <- list(
-              "readr"          = NULL, 
+              "readr"          = "2.0.2", 
               "tidyr"          = "1.0.0", # for use of pivot_longer
-              "shiny"          = NULL, 
-              "ggplot2"        = NULL, 
-              "dplyr"          = NULL, 
-              "stringr"        = NULL,
-              "shinydashboard" = NULL, 
-              "tibble"         = NULL, 
-              "Rdpack"         = NULL  # for reference
+              "shiny"          = "1.7.1", 
+              "ggplot2"        = "3.3.5", 
+              "dplyr"          = "1.0.7", 
+              "stringr"        = "1.4.0",
+              "shinydashboard" = "0.7.2", 
+              "tibble"         = "3.1.5",
+              "lifecycle"      = "1.0.1",
+              "Rdpack"         = "2.1.2"  # for reference
               )
 
 import_packages <- setNames(lapply(sort(names(import_packages)), 
@@ -58,10 +59,11 @@ for(k in 1:length(import_packages)){
 
 # for suggested packages
 suggest_packages <- list(
-        "survminer"          = NULL, 
-        "DT"                 = NULL, 
-        "markdown"           = NULL, 
-        "knitr"              = NULL
+        "survminer"          = "0.4.9", 
+        "DT"                 = "0.20", 
+        "markdown"           = "1.1",
+        "testthat"           = "3.1.1",
+        "knitr"              = "1.36"
 )
 suggest_packages <- setNames(lapply(sort(names(suggest_packages)), 
                                    FUN = function(n) suggest_packages[[n]]), sort(names(suggest_packages)))
@@ -74,11 +76,17 @@ for(k in 1:length(suggest_packages)){
 usethis::use_github_action_check_standard()
 # https://www.r-bloggers.com/2017/06/how-to-add-code-coverage-codecov-to-your-r-package/
 usethis::use_coverage()
+usethis::use_github_action("test-coverage")
 covr::codecov(token = "72a9bba5-c860-41f7-919b-120efff6a776")
 
 usethis::use_cran_badge()
 usethis::use_lifecycle_badge("experimental")
 
+## add vignette file
+usethis::use_vignette("help")
+
+
+## update versions -----------------------------------------------------------
 usethis::use_version("patch")
 
 
@@ -97,7 +105,7 @@ Sys.getenv("PATH")
 devtools::build(manual = T)
 
 ## generate the help manual.
-pack <- "shinyapps4clinicaltrial"
+pack <- "r4ct"
 path <- find.package(pack)
 if (file.exists(paste0(pack, ".pdf"))) {file.remove(paste0(pack, ".pdf"))}
 

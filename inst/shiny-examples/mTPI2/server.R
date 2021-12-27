@@ -1,7 +1,7 @@
 # Define server logic 
 server <- shinyServer(function(input, output, session) {
   
-  require("shinyapps4clinicaltrial")
+  require("r4ct")
   require("ggplot2")
   require("magrittr")
   

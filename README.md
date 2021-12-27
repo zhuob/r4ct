@@ -1,7 +1,7 @@
-# shinyapps4clinicaltrial
+# r4ct
 
 [![R-CMD-check](https://github.com/zhuob/R4ClinicalTrial/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zhuob/R4ClinicalTrial/actions/workflows/R-CMD-check.yaml)
-[![CRAN status](https://www.r-pkg.org/badges/version/shinyapps4clinicaltrial)](https://CRAN.R-project.org/package=shinyapps4clinicaltrial)
+[![CRAN status](https://www.r-pkg.org/badges/version/r4ct)](https://CRAN.R-project.org/package=r4ct)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) 
 [![Codecov test coverage](https://codecov.io/gh/zhuob/R4ClinicalTrial/branch/master/graph/badge.svg)](https://app.codecov.io/gh/zhuob/R4ClinicalTrial?branch=master)
 [![Github All Releases](https://img.shields.io/github/downloads/zhuob/R4ClinicalTrial/total.svg)]()

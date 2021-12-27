@@ -7,7 +7,7 @@
 # Source all module files and store the code in a 'modules' environment object
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 require("shinydashboard")
-require("shinyapps4clinicaltrial")
+require("r4ct")
 require("shiny")
 
 
@@ -27,7 +27,7 @@ for (util_file in dir(".", pattern = "-fun.R", full.names = TRUE)) {
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # data set available in the bucket
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# current_data <- shinyapps4clinicaltrial:::raw_data
+# current_data <- r4ct:::raw_data
 
 
 

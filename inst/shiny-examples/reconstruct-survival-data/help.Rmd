@@ -17,10 +17,10 @@ link-citations: yes
 # Can't Wait Trying?
 
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
-library(shinyapps4clinicaltrial)
+library(r4ct)
 library(dplyr); library(magrittr)
-ex_df1 <- shinyapps4clinicaltrial::click_data
-ex_df2 <- shinyapps4clinicaltrial::risk_table
+ex_df1 <- r4ct::click_data
+ex_df2 <- r4ct::risk_table
 ex_df3 <- reconstruct_survival_data(data_click = ex_df1, data_nar = ex_df2)
 arms <- unique(ex_df3$arm)
 ex_df3 <- ex_df3 %>% mutate(arm = factor(arm, levels = arms[c(2, 3, 1)])) %>% arrange(arm)

@@ -319,7 +319,7 @@ mTPIeval=function(B=B0,scen=1,cohs=cohs0,ncohd=ncohd0,
 #'   Bayes posterior probability, based on which a decision table is generated
 #'   using mTPI2 method.
 #' @references{
-#'   \insertRef{guo2017bayesian}{shinyapps4clinicaltrial}
+#'   \insertRef{guo2017bayesian}{r4ct}
 #' }
 #'   
 #' @importFrom Rdpack reprompt

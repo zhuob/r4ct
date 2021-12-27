@@ -12,9 +12,9 @@ module_03$comp_01 <- new.env()
 # 
 # 
 #   # first copy the REFERENCES.bib to the folder
-#   bib_loc <- system.file("REFERENCES.bib", package = "shinyapps4clinicaltrial")
+#   bib_loc <- system.file("REFERENCES.bib", package = "r4ct")
 #   # find the location of .Rmd
-#   app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "shinyapps4clinicaltrial")
+#   app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "r4ct")
 # 
 #   if(!file.exists(paste0(app_dir, "/", "help.html"))){
 #     # copy .bib file to generate help.html
@@ -40,7 +40,7 @@ module_03$comp_01 <- new.env()
 
 module_03$comp_01$ui <- function(){
 
-  app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "shinyapps4clinicaltrial")
+  app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "r4ct")
   help_file <- paste0(app_dir, "/", "help.html")
 
 
@@ -71,7 +71,7 @@ module_03$comp_01$server <- function(input, output, session, data){
 # 
 # module_03$comp_01$server <- function(input, output, session, data){
 #   
-#   app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "shinyapps4clinicaltrial")
+#   app_dir <- system.file("shiny-examples", "reconstruct-survival-data", package = "r4ct")
 #   rmd_file <- paste0(app_dir, "/", "help.Rmd")
 #   print(rmd_file)
 #   

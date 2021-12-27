@@ -40,6 +40,6 @@ mtpi2_decision_plot(nmax = 30, cocap = 12, tolerance1 = 0.05, tolerance2 =
 }
 \references{
 {
-\insertRef{guo2017bayesian}{shinyapps4clinicaltrial}
+\insertRef{guo2017bayesian}{r4ct}
 }
 }

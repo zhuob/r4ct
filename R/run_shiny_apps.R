@@ -19,7 +19,7 @@ launch_app <- function(appname){
   lifecycle::signal_stage("experimental", "launch_app()")
   
   # locate all the shiny examples that exist
-  valid_examples <- list.files(system.file("shiny-examples", package = "shinyapps4clinicaltrial"))
+  valid_examples <- list.files(system.file("shiny-examples", package = "r4ct"))
   
   valid_example_msg <- paste0("Valid Examples are: '", 
                               paste(valid_examples, collapse = "', '"), "'")
@@ -31,7 +31,7 @@ launch_app <- function(appname){
   }
   
   # find and launch the app
-  app_dir <- system.file("shiny-examples", appname, package = "shinyapps4clinicaltrial")
+  app_dir <- system.file("shiny-examples", appname, package = "r4ct")
   
   
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

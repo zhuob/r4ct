@@ -1,4 +1,4 @@
 library(testthat)
-library(shinyapps4clinicaltrial)
+library(r4ct)
 
-test_check("shinyapps4clinicaltrial")
+test_check("r4ct")

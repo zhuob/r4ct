@@ -15,8 +15,10 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr (>= 1.0.7),
-    ggplot2 (>= 2_3.3.5),
+    ggplot2 (>= 3.3.5),
+    lifecycle (>= 1.0.1),
     magrittr,
+    Rdpack (>= 2.1.2),
     readr (>= 2.0.2),
     shiny (>= 1.7.1),
     shinydashboard (>= 0.7.2),
@@ -33,6 +35,8 @@ Suggests:
     knitr (>= 1.36),
     DT (>= 0.20),
     markdown (>= 1.1),
-    Rdpack (>= 2.1.2),
     survminer (>= 0.4.9),
-    covr
+    covr,
+    testthat (>= 3.1.1),
+    rmarkdown
+VignetteBuilder: knitr
