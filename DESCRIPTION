@@ -1,7 +1,7 @@
-Package: shinyapps4clinicaltrial
+Package: r4ct
 Type: Package
-Title: R shiny tools for clinical trials
-Version: 0.2.4
+Title: R tools for clinical trials
+Version: 0.2.5
 Authors@R:
     c(person(given = "bling",
              family = "bling",
@@ -14,27 +14,25 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    dplyr,
-    ggplot2,
-    lifecycle,
+    dplyr (>= 1.0.7),
+    ggplot2 (>= 2_3.3.5),
     magrittr,
-    Rdpack,
-    readr,
-    shiny,
-    shinydashboard,
-    stringr,
-    tibble,
+    readr (>= 2.0.2),
+    shiny (>= 1.7.1),
+    shinydashboard (>= 0.7.2),
+    stringr (>= 1.4.0),
+    tibble (>= 3.1.5),
     tidyr (>= 1.0.0)
-Suggests: 
-    survminer,
-    DT,
-    testthat (>= 3.0.0),
-    knitr,
-    markdown,
-    covr
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
 RdMacros: Rdpack 
 Depends: 
     R (>= 3.5.0)
 Roxygen: list(markdown = TRUE)
+Suggests: 
+    knitr (>= 1.36),
+    DT (>= 0.20),
+    markdown (>= 1.1),
+    Rdpack (>= 2.1.2),
+    survminer (>= 0.4.9),
+    covr
