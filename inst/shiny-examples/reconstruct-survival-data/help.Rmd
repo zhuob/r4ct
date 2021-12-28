@@ -71,6 +71,10 @@ of each horizontal line segment**.
 ```{r, echo=FALSE, fig.cap="", out.width = '80%'}
 knitr::include_graphics("www/click1.png")
 ```
+Please note that you should click the position where the KM curve has a drop.
+```{r, echo=FALSE, fig.cap="", out.width = '80%'}
+knitr::include_graphics("www/click2.png")
+```
 
     + The resulting figure after you complete all clicks looks like below
 ```{r, echo=FALSE, fig.cap="", out.width = '80%'}
