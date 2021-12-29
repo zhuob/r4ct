@@ -166,6 +166,7 @@ prop_mle <- function(p1_hat, p2_hat, delta = NULL, r0 = NULL, theta, metric = "r
 #' for the cases of (x1, x2) taking value of (0, 0), (0, 1), (1, 0), or (1, 1)
 #' the boundary z values are handled based on Chan's 1999 paper
 #' @references{
+#' \insertRef{farrington1990test}{r4ct}
 #' \insertRef{chan1999test}{r4ct}
 #' }
 #'
@@ -233,6 +234,24 @@ farrington_manning_z <- function(x1, x2, n1, n2, delta = NULL, r0 = NULL, metric
 }
 
 
+# the z table for all possible combinations of x = i and y = j
+# the z values are calculated based on FM-Score test.
+farrington_manning_ztable <- function(n1, n2, delta){
+  z_1 <- matrix(NA, nrow= n1 + 1, ncol = n2 + 1)
+  
+  for(i in 1:nrow(z_1)){  # calculate the z_eq for each pair of (i, j)
+    for(j in 1:ncol(z_1)){
+      temp <- farrington_manning_z(x1 = i-1, x2 = j-1, n1 = n1, n2 = n2, 
+                                   delta = delta, r0 = NULL, metric = "riskdiff")
+      z_1[i, j] <- temp$z_eq
+    }
+    
+  }
+  
+  return(z_1)
+  
+}
+
 # the sum of probabilites whose combination of i and j results a test statistic
 # that is less than or equal to z_eq
 exact_prob <- function(n1, n2, p2, delta, z_index){
@@ -249,23 +268,6 @@ exact_prob <- function(n1, n2, p2, delta, z_index){
   
 }
 
-
-# the z table for all possible combinations of x = i and y = j
-# the z values are calculated based on FM-Score test.
-farrington_manning_ztable <- function(n1, n2, delta){
-  z_1 <- matrix(NA, nrow= n1 + 1, ncol = n2 + 1)
-  
-  for(i in 1:nrow(z_1)){  # calculate the z_eq for each pair of (i, j)
-    for(j in 1:ncol(z_1)){
-      temp <- farrington_manning_z(x1 = i-1, x2 = j-1, n1 = n1, n2 = n2, delta = delta)
-      z_1[i, j] <- temp$z_eq
-    }
-    
-  }
-  
-  return(z_1)
-  
-}
 
 
 
@@ -286,6 +288,7 @@ farrington_manning_ztable <- function(n1, n2, delta){
 #' @export
 #'
 #' @examples
+#' farrington_manning_significance(n1 = 50, n2 = 50, delta = 0.2, p2 = 0.7, alpha = 0.05)
 farrington_manning_significance <- function(n1, n2, delta, p2, alpha = 0.05, method = "exact"){
   
   if(!(method %in% c("exact", "normal"))){
@@ -356,7 +359,6 @@ farrington_manning_significance <- function(n1, n2, delta, p2, alpha = 0.05, met
 #'
 #' @examples
 #'  # this is the example given by Chan's 1998 paper (see figure 4)
-#'  #
 #'  x1 = 69; x2 = 83; n1 = 76; n2 = 88; delta = 0.1;
 #'  p2_search <- seq(0.01, 0.9, by = 0.001)
 #' pval <- farrington_manning_chan_pval(x1, x2, n1, n2, delta = delta,
@@ -366,7 +368,8 @@ farrington_manning_significance <- function(n1, n2, delta, p2, alpha = 0.05, met
 farrington_manning_chan_pval <- function(x1, x2, n1, n2, delta, p2_search){
   
   niter <- length(p2_search)
-  z_test <- farrington_manning_z(x1, x2, n1, n2, delta)
+  z_test <- farrington_manning_z(x1 = x1, x2 = x2, n1 = n1, n2 = n2, 
+                                 delta = delta, r0 = NULL, metric = "riskdiff")$z_eq
   # calculate z for each combination of i and j
   z1 <- farrington_manning_ztable(n1 = n1, n2 = n2, delta =  delta)
   z_index <- z1 <= z_test   # a matrix of TRUE or FALSE 

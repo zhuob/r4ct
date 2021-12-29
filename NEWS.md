@@ -1,3 +1,5 @@
+# r4ct 0.2.6
+
 # r4ct 0.2.5
 
 * change the name to `r4ct`

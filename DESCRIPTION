@@ -1,7 +1,7 @@
 Package: r4ct
 Type: Package
 Title: R tools for clinical trials
-Version: 0.2.5
+Version: 0.2.6
 Authors@R:
     c(person(given = "bling",
              family = "bling",

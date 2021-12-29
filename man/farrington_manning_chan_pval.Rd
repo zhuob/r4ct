@@ -29,7 +29,6 @@ is the corresponding p-value
 }
 \examples{
  # this is the example given by Chan's 1998 paper (see figure 4)
- #
  x1 = 69; x2 = 83; n1 = 76; n2 = 88; delta = 0.1;
  p2_search <- seq(0.01, 0.9, by = 0.001)
 pval <- farrington_manning_chan_pval(x1, x2, n1, n2, delta = delta,

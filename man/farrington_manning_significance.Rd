@@ -36,3 +36,6 @@ numerical value of actual significance level.
 \description{
 Significance level calculation using Farrington & Manning method
 }
+\examples{
+farrington_manning_significance(n1 = 50, n2 = 50, delta = 0.2, p2 = 0.7, alpha = 0.05)
+}
