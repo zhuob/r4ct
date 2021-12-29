@@ -50,6 +50,7 @@ the boundary z values are handled based on Chan's 1999 paper
 }
 \references{
 {
+\insertRef{farrington1990test}{r4ct}
 \insertRef{chan1999test}{r4ct}
 }
 }

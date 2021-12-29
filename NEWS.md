@@ -1,5 +1,6 @@
 # r4ct 0.2.6
-  fix a bug in the Farrington-Manning test
+  * fix a bug in the Farrington-Manning test
+  * Add test case 
   
 # r4ct 0.2.5
 

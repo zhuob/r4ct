@@ -21,7 +21,10 @@ usethis::use_r("risk_table")
 ################ add test cases ################################################
 #  create testthat structure                                                   #
 usethis::use_testthat()                                                        #
-usethis::use_test("mtpi2_fun")                                                 #
+usethis::use_test("mtpi2_fun")
+usethis::use_test("farrington-manning")     
+
+#
 #                                                                              #
 #                                                                              #
 #         The code above only needs to run once                                #
@@ -75,7 +78,7 @@ for(k in 1:length(suggest_packages)){
 ## add check state on README see https://stackoverflow.com/questions/63140363/how-to-add-r-cmd-check-state-on-readme-at-github
 usethis::use_github_action_check_standard()
 # https://www.r-bloggers.com/2017/06/how-to-add-code-coverage-codecov-to-your-r-package/
-usethis::use_coverage()
+usethis::use_coverage(type = c("codecov"))
 usethis::use_github_action("test-coverage")
 covr::codecov(token = "72a9bba5-c860-41f7-919b-120efff6a776")
 
