@@ -1,5 +1,6 @@
 # r4ct 0.2.6
-
+  fix a bug in the Farrington-Manning test
+  
 # r4ct 0.2.5
 
 * change the name to `r4ct`
