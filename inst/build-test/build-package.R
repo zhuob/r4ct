@@ -81,7 +81,9 @@ usethis::use_github_action_check_standard()
 usethis::use_coverage(type = c("codecov"))
 usethis::use_github_action("test-coverage")
 covr::codecov(token = "72a9bba5-c860-41f7-919b-120efff6a776")
-
+# for calculating code coverage see https://cran.r-project.org/web/packages/covr/readme/README.html
+# and  https://docs.travis-ci.com/user/tutorial/
+usethis::use_travis() 
 usethis::use_cran_badge()
 usethis::use_lifecycle_badge("experimental")
 
