@@ -1,3 +1,9 @@
+modules <- new.env()
+for (util_file in dir(".", pattern = "-fun.R", full.names = TRUE)) {
+  source(file = util_file, local = modules)
+}
+
+
 # Define server logic 
 server <- shinyServer(function(input, output, session) {
   

@@ -5,7 +5,11 @@ library(magrittr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-library(r4ct)
+# install.packages("devtools")
+# if(!require("r4ct")){
+#   devtools::install_github("zhuob/R4ClinicalTrial")
+# }
+# library(r4ct)
 # library(assertthat)
 # library(backports)
 # library(cli)
