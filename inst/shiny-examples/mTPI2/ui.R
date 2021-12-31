@@ -1,5 +1,7 @@
 # Define UI
 ui <- fluidPage(
+  ## add new theme 
+  theme = bslib::bs_theme(),
   titlePanel("mTPI-2"),
   tabsetPanel(
     type="tab",

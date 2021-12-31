@@ -11,6 +11,8 @@ server <- shinyServer(function(input, output, session) {
   require("ggplot2")
   require("magrittr")
   
+  bslib::bs_themer()
+  
   output$secondSelection <- renderUI({
     sliderInput("startDose", 
                 h6("Starting Dose"), 
