@@ -13,11 +13,6 @@ module_01$comp_01$ui <- function(){
                        fluidPage(
                         title="Decision Table",
                         
-                        h3("Go/No-Go Plot"),                                  
-                        plotOutput("plot1", width = "100%")
-                        ),
-           
-                        hr(),
                         fluidRow(
                           column(3, 
                                  sliderInput("nmax",
@@ -84,6 +79,13 @@ module_01$comp_01$ui <- function(){
                         fluidRow(column(4, numericInput("a", "Alpha:", 1, min = 0, max = 100)), 
                                  column(4, numericInput("b", "Beta:", 1, min = 0, max = 100))),
                         
+                         fluidRow(column(5, actionButton(inputId = "update_dmat", label = "Update Decision Matrix", 
+                                               icon = icon("redo-alt"), class = "btn-info"), offset = 0.5)),
+                        h3("Go/No-Go Plot"),                                  
+                        plotOutput("plot1", width = "100%")
+                       ),
+                      tags$br(),
+                      h4("Download"),
                       fluidRow(
                         column(6, downloadButton('downloadData1', 'Download Plot', class = "btn-success")
                                ),
@@ -91,6 +93,7 @@ module_01$comp_01$ui <- function(){
                                downloadButton('downloadData2', 'Download Full Table', class = "btn-success")
                                )
                       ), 
+                      
                       tags$br(),
                       tags$br()
                       )
@@ -99,7 +102,7 @@ module_01$comp_01$ui <- function(){
 
 module_01$comp_01$server <- function(input, output, session, data){
 
-  pptab <<- reactive({
+  pptab <<- eventReactive(input$update_dmat, {
     nmax <- input$nmax[2]
     nmin <- input$nmax[1]
     p0 <- input$px[1]
