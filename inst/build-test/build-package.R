@@ -23,7 +23,7 @@ usethis::use_r("risk_table")
 usethis::use_testthat()                                                        #
 usethis::use_test("mtpi2_fun")
 usethis::use_test("farrington-manning")     
-
+usethis::use_test("mtd-estimate")
 #
 #                                                                              #
 #                                                                              #
