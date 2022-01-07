@@ -312,38 +312,68 @@ mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, t
 #' @examples
 #'  n_dlt <- c(0,1,0,0,0,2); cohort_size <- c(3,6,3,6,3,6)
 #' estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
-estimate_dlt_isoreg = function(cohort_size, n_dlt, target){
+estimate_dlt_isoreg <- function(cohort_size, n_dlt, target, method = "selfCoded"){
   
   
+  y <- cohort_size; x <- n_dlt; target_tox <- target;
+  use_y <- which(y != 0) # which cohort has enrolled patients
+  doses <- 1:length(y); 
+  est_raw <- est_iso <- mtd <- rep(NA, length(y))
   
-  Doses <- 1:length(cohort_size)
-  indat <- data.frame(Doses, n = cohort_size ,DLTs = n_dlt)
-  
-  mn <- sum(indat$n>0)
-  raw.e <- indat[1:mn,3]/indat[1:mn,2]
-  Iso.e <- numeric(mn) 
-  iso <- 1 
-  mtd <- rep("",mn)
-  while(iso <= mn)	{
-    w1 <- indat[iso:mn,2] 
-    y1 <- raw.e[iso:mn]
-    cwm <- cumsum(w1*y1)/cumsum(w1)
-    iso1 <- which.min(cwm)+iso-1
-    Iso.e[iso:iso1] <- min(cwm) 
-    iso <- iso1+1	
+  if (method == "statsPackage"){
+    tox_isoreg <- stats::isoreg(x[use_y]/y[use_y])$yf
+  } else if(method == "selfCoded"){
+    tox_isoreg <- isotonic_reg(x = x[use_y], y = y[use_y])
   }
-  Iso.e <- Iso.e+1:mn*1e-6; 
   
-  tdi <- Iso.e-target;
-  w.min <- which(abs(abs(tdi)-min(abs(tdi)))<=0.000001);	
-  minii <- sign(tdi[w.min])
-  if (max(minii)<0) MTDds <- utils::tail(w.min,1)
-  if (min(minii)>=0) MTDds <- w.min[which.min(minii)]
-  if ((max(minii)>=0) & (min(minii)<0)) MTDds <- utils::tail(w.min[which(minii<0)],1)
-  mtd[MTDds] <- "MTD"
-  raw.est <- round(raw.e,4) 
-  Iso.est <- round(Iso.e,4)
-  cbind(indat,raw.est,Iso.est,mtd)
+  diff_target <- tox_isoreg - target_tox
+  target_dose <- which(abs(diff_target) == min(abs(diff_target)))
+  if(length(target_dose) == 1){
+    result <- target_dose
+  } else {
+    diff1 <- diff_target[target_dose]
+    if (min(diff1) >= 0 ){ # get the smallest if > target toxicity
+      result <- head(target_dose, 1)
+    } else{ # if equidistance from left or right, pick the max dose from the left 
+      result <- tail(target_dose[which(diff1 < 0)], 1)
+    }
+  }
+  final_result <- use_y[result] # the dose sequence for MTD  
+  est_raw[use_y] <- x[use_y]/y[use_y]
+  est_iso[use_y] <- tox_isoreg
+  mtd[final_result] <- "MTD"
+  
+  indat <- tibble::tibble(doses = doses, n = cohort_size, dlts = n_dlt, 
+                          est_raw = est_raw, est_iso = est_iso, mtd = mtd)
+  
+  return(indat)
+}
+
+
+#' isotonic regression for estimating probability of MTD
+#'
+#' @param x vector of number of toxicities
+#' @param y vector of number of subject at this dose level
+#'
+#' @return a vector of toxicity probabilities
+#' @export
+#' @keywords internal
+# #' @examples
+isotonic_reg <- function(x, y){
+  
+  if(length(x) != length(y)){
+    stop("vector lengths do not match")
+  }
+  ndose <- length(x)
+  p <- rep(NA, length(x))
+  i <- 1
+  while(i <= ndose){
+    p1 <- cumsum(x[i:ndose])/cumsum(y[i:ndose])
+    min_index <- which.min(p1) + sum(!is.na(p))
+    p[i:min_index] <- min(p1)
+    i <- min_index + 1
+  }
+  return(p)
 }
 
 
