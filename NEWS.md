@@ -1,3 +1,7 @@
+# r4ct 0.2.7
+  * update function `estimate_dlt_isoreg` with results verified by `stats::isoreg`
+  * expand the function `estimate_dlt_isoreg` so that it allows a cohort of size 0
+  
 # r4ct 0.2.6
   * fix a bug in the Farrington-Manning test
   * Add test case 

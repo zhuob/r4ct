@@ -305,6 +305,10 @@ mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, t
 #' @param n_dlt a vector of number of DLTs (must have the same length as
 #'   \code{cohort_size})
 #' @param target the target toxicity 
+#' @param method The method used to perform isotonic regression estimate, either
+#'   `selfCoded` for  self-implementation or `statsPackage` using
+#'   \code{\link[stats]{isoreg}}. No matter what method you choose, the results
+#'   should be identical.
 #'
 #' @return a table of results for the estimates
 #' @export
@@ -312,8 +316,14 @@ mtpi2_decision_plot = function(nmax, cocap, tolerance1, tolerance2, a, b, tox, t
 #' @examples
 #'  n_dlt <- c(0,1,0,0,0,2); cohort_size <- c(3,6,3,6,3,6)
 #' estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
+#'  # it also allows cohort size of 0 in a given cohort
+#'   n_dlt <- c(0,1,0,0,0, 0, 2); cohort_size <- c(3,6,3,0,6,3,6)
+#' estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
 estimate_dlt_isoreg <- function(cohort_size, n_dlt, target, method = "selfCoded"){
   
+  if(length(cohort_size) != length(n_dlt)){
+    stop("The length of cohort does not match with that of n_dlt. Please check your input!")
+  }
   
   y <- cohort_size; x <- n_dlt; target_tox <- target;
   use_y <- which(y != 0) # which cohort has enrolled patients
@@ -333,9 +343,9 @@ estimate_dlt_isoreg <- function(cohort_size, n_dlt, target, method = "selfCoded"
   } else {
     diff1 <- diff_target[target_dose]
     if (min(diff1) >= 0 ){ # get the smallest if > target toxicity
-      result <- head(target_dose, 1)
+      result <- utils::head(target_dose, 1)
     } else{ # if equidistance from left or right, pick the max dose from the left 
-      result <- tail(target_dose[which(diff1 < 0)], 1)
+      result <- utils::tail(target_dose[which(diff1 < 0)], 1)
     }
   }
   final_result <- use_y[result] # the dose sequence for MTD  

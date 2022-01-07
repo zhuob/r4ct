@@ -5,7 +5,7 @@
 \title{Given number of subjects and DLTs, estimate the MTD by isotonic regression
 and empirical estimation}
 \usage{
-estimate_dlt_isoreg(cohort_size, n_dlt, target)
+estimate_dlt_isoreg(cohort_size, n_dlt, target, method = "selfCoded")
 }
 \arguments{
 \item{cohort_size}{a vector of number of subjects in each cohort}
@@ -14,6 +14,11 @@ estimate_dlt_isoreg(cohort_size, n_dlt, target)
 \code{cohort_size})}
 
 \item{target}{the target toxicity}
+
+\item{method}{The method used to perform isotonic regression estimate, either
+\code{selfCoded} for  self-implementation or \code{statsPackage} using
+\code{\link[stats]{isoreg}}. No matter what method you choose, the results
+should be identical.}
 }
 \value{
 a table of results for the estimates
@@ -24,5 +29,8 @@ and empirical estimation
 }
 \examples{
  n_dlt <- c(0,1,0,0,0,2); cohort_size <- c(3,6,3,6,3,6)
+estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
+ # it also allows cohort size of 0 in a given cohort
+  n_dlt <- c(0,1,0,0,0, 0, 2); cohort_size <- c(3,6,3,0,6,3,6)
 estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
 }
