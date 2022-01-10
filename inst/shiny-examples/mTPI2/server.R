@@ -1,6 +1,6 @@
 modules <- new.env()
 for (util_file in dir(".", pattern = "-fun.R", full.names = TRUE)) {
-  source(file = util_file, local = modules)
+  source(file = util_file) #, local = modules)
 }
 
 
@@ -181,9 +181,11 @@ server <- shinyServer(function(input, output, session) {
   prod_figure <- eventReactive(input$Goiso, {
     
     dat1 <- res()
-    names(dat1) <- c("Doses","n","DLTs","Raw.Est","Iso.Est","MTD" )#, "trueDLT")
     
-    dat_plot <- dat1 %>% dplyr::select(Doses, Raw.Est, Iso.Est ) %>% #, trueDLT) %>% 
+    names(dat1) <- c("n","DLTs","Raw.Est","Iso.Est","MTD" )#, "trueDLT")
+    
+    dat_plot <- dat1 %>% dplyr::mutate(Doses = 1:nrow(dat1)) %>%
+      dplyr::select(Doses, Raw.Est, Iso.Est ) %>% #, trueDLT) %>% 
       tidyr::pivot_longer(cols = 2:3, names_to = "Estimate", values_to = "pct") %>% 
       dplyr::mutate(Doses = factor(Doses), Estimate = ifelse(Estimate == "Raw.Est", "Emperical Estimate", "Isotonic Regression"))
     
@@ -206,8 +208,8 @@ server <- shinyServer(function(input, output, session) {
     text: 'Save'}]"
     button_print = "[{extend: 'print',
     text: 'Print'}]"
-    DT::datatable(res()[, -7],
-                  colnames = c("Doses","n","DLTs","Raw.Est","Iso.Est","MTD"),# "trueDLT", "target"),
+    DT::datatable(res(),
+                  colnames = c("n","DLTs","Raw.Est","Iso.Est","MTD"),# "trueDLT", "target"),
                   extensions = 'Buttons',
                   options = list(
                     dom = 'Bfrtip',

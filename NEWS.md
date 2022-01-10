@@ -1,3 +1,6 @@
+# r4ct 0.2.8
+  * move function elements of `mTPI2` from the packages to the app folder
+
 # r4ct 0.2.7
   * update function `estimate_dlt_isoreg` with results verified by `stats::isoreg`
   * expand the function `estimate_dlt_isoreg` so that it allows a cohort of size 0

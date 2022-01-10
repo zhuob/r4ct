@@ -2,8 +2,8 @@
 #'
 #' @param nsim number of simulations
 #' @param ptox the toxicity levels
-#' @param n0 for each cohort, the max number of subjects allowed (for simulation
-#'   purpose, this number can be set large, e.g. 100)
+#' @param nmax_perdose for each dose level, the max number of subjects allowed
+#'   (for simulation purpose, this number can be set large, e.g. 100)
 #' @param seed simulation seed for reproducibility purpose
 #'
 #' @return a 3d array
@@ -11,18 +11,18 @@
 #'
 #' @examples
 #' ptox <- c(0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35);
-#' nsim <- 1e4; n0 <- 100
-#' x1 <- sim_toxmat(nsim, ptox, n0, seed = 1234)
+#' nsim <- 1e4; nmax_perdose <- 100
+#' x1 <- sim_toxmat(nsim, ptox, nmax_perdose, seed = 1234)
 #' rowMeans(apply(x1, c(1, 3), mean))
 #' # to get a single simulation result; 
 #' sim1 <- t(x1[, , 1])
-sim_toxmat <- function(nsim, ptox, n0, seed = 1234){
+sim_toxmat <- function(nsim, ptox, nmax_perdose, seed = 1234){
   
   set.seed(seed)
   # number of doses
   ndose <- length(ptox)
   # Verify the matrix is created correctly such that the cell means are similar to scenario
-  dat <- array(rbinom(n0 * ndose * nsim, 1, prob = ptox), c(ndose, n0, nsim))
+  dat <- array(rbinom(nmax_perdose * ndose * nsim, 1, prob = ptox), c(ndose, nmax_perdose, nsim))
   # apply(dat, c(1, 2), mean)
   # verify the probabilities are correct ------
   # rowMeans(apply(dat, c(1, 3), mean))
@@ -34,19 +34,19 @@ sim_toxmat <- function(nsim, ptox, n0, seed = 1234){
 
 
 # slice one simulatiion
-get_one_sim_dat <- function(toxmat, cocap, isim){
+get_one_sim_dat <- function(toxmat, nmax_perdose, isim){
   
   # in this way, each column represents a cohort 
-  sim1 <- t(toxmat[, 1:cocap, isim])
+  sim1 <- t(toxmat[, 1:nmax_perdose, isim])
   
   return(sim1)
   
 }
 
 # for a given cohort, calculate number of toxicity
-get_tox_bycohort <- function(one_trial_dat, ncum_cohort, cohortsize, cocap, current_dose){
+get_tox_bycohort <- function(one_trial_dat, ncum_cohort, cohortsize, nmax_perdose, current_dose){
   
-  nenrolled2 <- min(ncum_cohort + cohortsize, cocap) # if nsbj reaches max, cap it
+  nenrolled2 <- min(ncum_cohort + cohortsize, nmax_perdose) # if nsbj reaches max, cap it
   ntox_by_cohort <- sum(one_trial_dat[(ncum_cohort + 1):nenrolled2, current_dose])
   
   return(ntox_by_cohort)
@@ -68,8 +68,19 @@ next_move <- function(idecision){
 }
 
 
-# based on the current trial decide whici the next dose is
-find_next_dose <- function(move_dir, current_dose, cocap, ncum_cohort, dose_decision){
+#' based on the current trial decide whici the next dose is
+#'
+#' @param move_dir the escalation indicator `1 = E`, `0 = S` and `-1 = D`
+#' @param current_dose the current dose level
+#' @param nmax_perdose the cohort cap size
+#' @param ncum_cohort a vector for number of subjects in each cohort
+#' @param dose_decision a vector for most recent decision made at each dose level
+#'
+#' @return
+#' @export
+#'
+#' @examples
+find_next_dose <- function(move_dir, current_dose, nmax_perdose, ncum_cohort, dose_decision){
   
     ndose <- length(ncum_cohort)
     
@@ -81,23 +92,32 @@ find_next_dose <- function(move_dir, current_dose, cocap, ncum_cohort, dose_deci
       skip_dose <- TRUE
       skip_reason <- "highest dose reached"
       
-    } else if(next_dose < 0){
+    } else if(next_dose == 0){
       
-      next_dose <- NA; 
-      skip_dose <- TRUE
-      skip_reason <- "lowest dose reached"
+      if(sum(ncum_cohort) <= 3){ # if total subjects <= 3 and next dose is 0, change to stay
+        
+        next_dose <- current_dose; 
+        skip_dose <- TRUE
+        skip_reason <- "n total <= 3, change D to S"
+        
+      } else{
+        next_dose <- NA; 
+        skip_dose <- TRUE
+        skip_reason <- "lowest dose reached"
+        
+      }
       
     } else {
       
       # test whether the next dose level has reached DU 
       ind1 <- dose_decision[next_dose] %in% c("DU")
       # check if cohort cap is reached for the next dose level
-      ind2 <- ncum_cohort[next_dose] >= cocap
+      ind2 <- ncum_cohort[next_dose] >= nmax_perdose
       
       skip_reason <- dplyr::case_when(
         ind1 & !ind2 ~  "DU",
-        ind2 & !ind1 ~  "cohort max n", 
-        ind1 & ind2  ~  "D/DU & max n", 
+        ind2 & !ind1 ~  "max n reached for next dose level", 
+        ind1 & ind2  ~  "DU & max n", 
         TRUE         ~  ""
       )
       
@@ -114,7 +134,22 @@ find_next_dose <- function(move_dir, current_dose, cocap, ncum_cohort, dose_deci
 
 
 
-run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, cocap, cohortsize){
+#' Run one trial of dose escalation
+#'
+#' @param one_trial_dat the simulated outcome matrix. For cell [i, j], value 1
+#'   means the jth subject in ith dose experienced toxicity, while 0 suggests no
+#'   toxicity.
+#' @param dslv_start select a dose level to start
+#' @param dmat the decision matrix used to run the simulation
+#' @param nmax max number of subjects
+#' @param nmax_perdose cohort cap for each dose
+#' @param cohortsize the number of subjects enrolled for each cohort
+#'
+#' @return a tibble 
+#' @export
+#'
+#' @examples
+run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax_perdose, cohortsize){
   
   # initiate parameters
   ndose            <- ncol(one_trial_dat) # number of doses
@@ -126,15 +161,16 @@ run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, coca
   nenrolled        <- sum(ncum_cohort)  # number of subjects enrolled
   dose_decision    <- rep(NA, ndose) # the most recent decision made at each dose level
   
-  while(nenrolled <= nmax){
+  while(nenrolled < nmax){
     # how many decisions are made
     step <- step + 1 
     
     # enroll patients by cohort size; calculate number of toxicities seen in this cohort
+    cohortsize <- min(cohortsize, nmax - nenrolled)
     ntox <- get_tox_bycohort(one_trial_dat = one_trial_dat, 
                              ncum_cohort = ncum_cohort[current_dose], 
                              cohortsize = cohortsize, 
-                             cocap = cocap, 
+                             nmax_perdose = nmax_perdose, 
                              current_dose = current_dose)
     
     # update number of subjects & most updated decision in each cohort
@@ -154,7 +190,7 @@ run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, coca
     #  2. the next decision is DU
     #  3. total sample size is reached
     
-    check_next_dose <- find_next_dose(move_dir, current_dose, cocap = cocap, ncum_cohort = ncum_cohort, dose_decision)
+    check_next_dose <- find_next_dose(move_dir, current_dose, nmax_perdose = nmax_perdose, ncum_cohort = ncum_cohort, dose_decision)
     
     # save the results
     res0 <- tibble::tibble(step = step, nenrolled = nenrolled, n_current = cohortsize, 
@@ -165,7 +201,7 @@ run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, coca
     
     escalation_table <- dplyr::bind_rows(escalation_table, res0)
     
-    if(is.na(res0$next_dose)){
+    if(is.na(res0$next_dose)){ # no next dose is available
       break
     }
     current_dose <- res0$next_dose

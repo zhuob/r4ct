@@ -40,7 +40,7 @@ plot_iso_estimate <-  function(dat1, target, yupper = 0.5){
 #' @param tolerance1 Equivalence Radius -(target tox - tolerance1 = lower acceptance value )
 #' @param nsim number of simulations to run
 #' @param tolerance2 Equivalence Radius +(target tox + tolerance1 = lower acceptance value )
-#' @param cocap max number of subjects for each cohort
+#' @param nmax_perdose max number of subjects for each cohort
 #' @param tox Unacceptable Toxicity: Prob(Overdosing)
 #' @param a,b prior parameters for beta distribution 
 #' @param dslv_start Starting Dose to run simulation
@@ -51,9 +51,9 @@ plot_iso_estimate <-  function(dat1, target, yupper = 0.5){
 #' @examples
 #' sim_mtpi2(tdose = c(0.05,0.1,0.2,0.25,0.3,0.35), ndose = 6,nmax = 30,
 #' cosize = 3,target = 0.3, tolerance1 = 0.05,nsim = 1000, tolerance2= 0.05, 
-#' cocap = 12,tox = 0.95,  a = 1, b = 1, dslv_start = 3)
+#' nmax_perdose = 12,tox = 0.95,  a = 1, b = 1, dslv_start = 3)
 sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,  
-                     tolerance2, cocap, tox,  a, b, dslv_start) {
+                     tolerance2, nmax_perdose, tox,  a, b, dslv_start) {
   
   nds <- length(tdose)
   nds1 <- nds+1 
@@ -67,11 +67,11 @@ sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,
   mxn1 <- mxn+1						## max N
   ncoh <- mxn/cohs0 
   ncoh1 <- ncoh+1						## no. of cohorts
-  ncohd0 <- cocap	
+  ncohd0 <- nmax_perdose	
   
-  cocap <- 10; target <- 0.3; a = 1; b = 1; 
+  nmax_perdose <- 10; target <- 0.3; a = 1; b = 1; 
   tolerance1 = 0.05; tolerance2 <- 0.05; tox = 0.95
-  decision_mat <- mtpi2_decision_matrix(cocap = cocap, 
+  decision_mat <- mtpi2_decision_matrix(nmax_perdose = nmax_perdose, 
                                         target = target, 
                                         a = a, 
                                         b = b, 
@@ -81,7 +81,7 @@ sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,
                                         method = "mtpi2")
   Escf <- decision_mat
   
-  outlist <- mTPIeval(B=nsim,scen=1,cohs=cohs0,ncohd=cocap,ncoh=ceiling(ncoh),
+  outlist <- mTPIeval(B=nsim,scen=1,cohs=cohs0,ncohd=nmax_perdose,ncoh=ceiling(ncoh),
                       mxn=mxn,pt=pt,pt.a=pt1,pt.b=pt2,tdose=tdose,nds=nds,ncoh1=ceiling(ncoh1),
                       nds1=nds1,nds2=nds2,Escf=Escf,apr=apr,bpr=bpr,p.ud=p.ud, dslv_start = dslv_start)
   outlist
@@ -136,7 +136,7 @@ hybrid33_decision <- function(){
 
 
 
-plot_path <- function(escalation_table, ndose, nmax){
+plot_escalation_path <- function(escalation_table, ndose, nmax){
   
   decision_seq <- c("D", "DU", "E", "S")
   
@@ -153,13 +153,13 @@ plot_path <- function(escalation_table, ndose, nmax){
   fig <- ggplot(data = tmp1, aes(x = nenrolled, y = current_dose)) + 
     geom_point(aes(color = current_decision, shape = current_decision), size = 4) + 
     geom_line() + 
-    scale_x_continuous(breaks = xlabels, limits = c(0, max(xlabels)), 
+    scale_x_continuous(breaks = xlabels, limits = c(0, nmax), 
                        name = "Cummulative Number of Subjects Enrolled") + 
     scale_y_continuous(breaks = 0:ndose, limits = c(0, ndose), 
                        name = "Dose Cohort") + 
     guides(color = guide_legend(title = "Decision")) +
     guides(shape = guide_legend(title = "Decision")) + 
-    scale_color_manual(values = c("#0063c3", "#d34d2f",  "#88c765", "#ec951a"),
+    scale_color_manual(values = c("#d34d2f", "#660000",  "#00FF33", "#CC9900"),
                       labels = decision_seq, drop = FALSE) +
     scale_shape_manual(values = c(15:18),
                        labels = decision_seq, drop = FALSE) + 
