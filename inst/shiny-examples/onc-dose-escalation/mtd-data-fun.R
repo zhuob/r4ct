@@ -149,7 +149,7 @@ find_next_dose <- function(move_dir, current_dose, nmax_perdose, ncum_cohort, do
 #' @export
 #'
 #' @examples
-run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax_perdose, cohortsize){
+run_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax_perdose, cohortsize){
   
   # initiate parameters
   ndose            <- ncol(one_trial_dat) # number of doses
@@ -166,7 +166,7 @@ run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax
     step <- step + 1 
     
     # enroll patients by cohort size; calculate number of toxicities seen in this cohort
-    cohortsize <- min(cohortsize, nmax - nenrolled)
+    cohortsize <- min(cohortsize, nmax - nenrolled, nmax_perdose - ncum_cohort[current_dose])
     ntox <- get_tox_bycohort(one_trial_dat = one_trial_dat, 
                              ncum_cohort = ncum_cohort[current_dose], 
                              cohortsize = cohortsize, 
@@ -216,6 +216,23 @@ run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax
 } 
 
 
+
+
+run_dose_escalation <- function(ptox,  nmax_perdose, dslv_start, dmat, nmax, cohortsize, seed){
+  
+  # simulate the outcome matrix 
+  # set nsim to 1 so that each time, only one trial outcome is simulated
+  set.seed(seed)
+  sim_mat <- sim_toxmat(nsim = 1, ptox = ptox, nmax_perdose = nmax_perdose, seed = seed) 
+  one_trial_dat <- get_one_sim_dat(toxmat = sim_mat, nmax_perdose = nmax_perdose, isim = 1)
+  tmp1 <- run_once(one_trial_dat, 
+                   dslv_start = dslv_start, 
+                   dmat = dmat, nmax = nmax, 
+                   nmax_perdose = nmax_perdose, 
+                   cohortsize = cohortsize)
+
+  return(tmp1)
+}
 
 #' @author Bin Zhuo \email{bzhuo@amgen.com}
 #' @title A wrapper to run parallel simulations
@@ -283,7 +300,7 @@ run_parallel_sim <- function(ncores, nsim, seed, core_fun,
   
   if(!parallel){  # run for loop
     t1 <- NULL
-    for(k in 1:nsim){
+    for(k in 1:nsim){ #print(k);
       t0 <- core_fun(seed = subseed[k], ...)
       t1 <- combine_method(t1, t0)
     }
