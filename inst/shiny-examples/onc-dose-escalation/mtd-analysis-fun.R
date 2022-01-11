@@ -21,7 +21,7 @@ plot_iso_estimate <-  function(dat1, target, yupper = 0.5){
     ggplot2::geom_hline(yintercept = target, color = "red", linetype = "dashed", size = 1.5) + 
     ggplot2::scale_y_continuous(breaks = seq(0, yupper, by = 0.05), 
                                 limits = c(0, yupper), labels = function(x) paste0(x*100, "%")) +
-    ggplot2::labs(x = "Doses", y = "Toxicity Probability") + 
+    ggplot2::labs(x = "Dose Level", y = "Toxicity Probability") + 
     ggplot2::theme(legend.position = "bottom", 
                    axis.text = ggplot2::element_text(size = 15),
                    legend.text = ggplot2::element_text(size = 12), 
@@ -29,113 +29,127 @@ plot_iso_estimate <-  function(dat1, target, yupper = 0.5){
 }
 
 
-
-#' Run the simulation
+#' Summary of simulation outcome
 #'
-#' @param tdose true DLT probabilities
-#' @param ndose total number of doses
-#' @param nmax max number of subjects 
-#' @param cosize the cohort size
-#' @param target target toxicity level
-#' @param tolerance1 Equivalence Radius -(target tox - tolerance1 = lower acceptance value )
-#' @param nsim number of simulations to run
-#' @param tolerance2 Equivalence Radius +(target tox + tolerance1 = lower acceptance value )
-#' @param nmax_perdose max number of subjects for each cohort
-#' @param tox Unacceptable Toxicity: Prob(Overdosing)
-#' @param a,b prior parameters for beta distribution 
-#' @param dslv_start Starting Dose to run simulation
+#' @name _summary
+#' @aliases nsubj_summary
+#' @aliases mtd_oc_summary
+#' 
+#' @rdname _summary
+#' @param subjs a matrix of subjects, cell [i, j] means number of subjects for
+#'   jth dose in ith simulation
+#' @param ntoxs a matrix of DLTs, cell [i, j] number of DLTs for jth dose in ith
+#'   simulation
+#' @param mtds a vector of index corresponding to MTD for each simulation
+#' @param ... parameters can be passed through `mean()` or `sd()`
 #'
-#' @return a list 
+#' @return a tibble
 #' @export
 #'
 #' @examples
-#' sim_mtpi2(tdose = c(0.05,0.1,0.2,0.25,0.3,0.35), ndose = 6,nmax = 30,
-#' cosize = 3,target = 0.3, tolerance1 = 0.05,nsim = 1000, tolerance2= 0.05, 
-#' nmax_perdose = 12,tox = 0.95,  a = 1, b = 1, dslv_start = 3)
-sim_mtpi2 = function(tdose, ndose, nmax, cosize, target, tolerance1, nsim,  
-                     tolerance2, nmax_perdose, tox,  a, b, dslv_start) {
+nsubj_summary <- function(subjs, ntoxs, mtds, ...){
   
-  nds <- length(tdose)
-  nds1 <- nds+1 
-  nds2 <- nds+2
-  if(ndose!=length(tdose)) stop("ERROR: Number of doses do not match input.")
-  if(min(tdose)<=0) stop("ERROR: Dose input must be positive numbers")
-  if(max(tdose)>=1) stop("ERROR: Dose input must be less than 1")
+  n_summary <- function(x, ...){
+    tibble::tibble(Min = min(x, ...), Med = median(x, ...), Max = max(x, ...), 
+                   Mean = mean(x, ...), SD = sd(x, ...))
+  }
   
-  mxn <- nmax 
-  cohs0 <- cosize
-  mxn1 <- mxn+1						## max N
-  ncoh <- mxn/cohs0 
-  ncoh1 <- ncoh+1						## no. of cohorts
-  ncohd0 <- nmax_perdose	
+  # total N
+  n_total <- rowSums(subjs) %>% n_summary(...)
+  # total DLTs
+  n_dlts  <- rowSums(ntoxs) %>% n_summary(...)
+  # N at toxicity Doses
+  n_at_tox_dose <- subjs[cbind(1:length(mtds), mtds)] %>% n_summary(...)
+  # DLTs at Toxicity Doses
+  dlt_at_tox_dose <- ntoxs[cbind(1:length(mtds), mtds)] %>% n_summary(...)
   
-  nmax_perdose <- 10; target <- 0.3; a = 1; b = 1; 
-  tolerance1 = 0.05; tolerance2 <- 0.05; tox = 0.95
-  decision_mat <- mtpi2_decision_matrix(nmax_perdose = nmax_perdose, 
-                                        target = target, 
-                                        a = a, 
-                                        b = b, 
-                                        tolerance1 = tolerance1, 
-                                        tolerance2 = tolerance2, 
-                                        tox = tox, 
-                                        method = "mtpi2")
-  Escf <- decision_mat
+  r0 <- tibble::tibble(summary_type = c("Total N", "Total DLTs", "N at Toxic Dose", "# DLTs at Toxic Dose"), 
+                       bind_rows(list(n_total, n_dlts, n_at_tox_dose, dlt_at_tox_dose)))
   
-  outlist <- mTPIeval(B=nsim,scen=1,cohs=cohs0,ncohd=nmax_perdose,ncoh=ceiling(ncoh),
-                      mxn=mxn,pt=pt,pt.a=pt1,pt.b=pt2,tdose=tdose,nds=nds,ncoh1=ceiling(ncoh1),
-                      nds1=nds1,nds2=nds2,Escf=Escf,apr=apr,bpr=bpr,p.ud=p.ud, dslv_start = dslv_start)
-  outlist
+  return(r0)
+  
+}
+
+#' @rdname _summary
+mtd_oc_summary <- function(subjs, ntoxs, mtds, isoest){
+  
+  # percent that each dose was identified as MTD
+  pct_mtd       <- table(mtds)/length(mtds)
+  ndose         <- ncol(subjs)
+  u1 <- setdiff(1:ndose, mtds)
+  full_mtd <- c(pct_mtd, rep(0, length(u1)))
+  names(full_mtd) <- c(names(pct_mtd), u1)
+  full_mtd   <- full_mtd[sort(names(full_mtd))]
+  # percent that each dose was tested
+  dose_test_pct <- colMeans(subjs > 0)
+  # number of subjects/DLTs in each dose level
+  n_tested      <- apply(subjs, 2, mean)
+  n_dlt         <- apply(ntoxs, 2, mean)
+  # percent of DLT experienced for each dose level
+  pct_dlt       <- colMeans(ntoxs > 0)
+  isoest        <- colMeans(isoest, na.rm = TRUE)
+  
+  r0 <- tibble::tibble(pct_mtd = full_mtd, dose_test_pct = dose_test_pct, 
+                       n_tested = n_tested, n_dlt = n_dlt, pct_dlt = pct_dlt, 
+                       isoest = isoest)
+  
+  return(r0)
+  
+}
+
+
+#' Simulation Summary
+#'
+#' @param obj the output from multiple simulation
+#' @param ptox  a vector of probabilities of toxicity at each dose level
+#' @param target  the target probability of toxicity
+#' @return a list of two tables, one for OC and the other for sample size summary
+#' @export
+#'
+#' @examples
+process_multiple_sim <- function(obj, ptox, target){
+  
+  nsim <- nrow(obj)
+  # transform results to table, so each row represents a simulation result
+  ntoxs <- matrix(obj %>% select(ntox) %>%  tidyr::unnest(1) %>% 
+                    as.matrix(), nrow = nsim, byrow = TRUE)
+  subjs <- matrix(obj %>% select(nsubj) %>%  tidyr::unnest(1) %>%
+                    as.matrix(), nrow = nsim, byrow = TRUE)
+  
+  find_mtd_index <- function(x, target){
+    mtd1 <- estimate_dlt_isoreg(cohort_size = subjs[x, ], n_dlt = ntoxs[x, ], target = target)
+    mtd_identified <- which(mtd1$mtd == "MTD")
+    t0 <- tibble(iso = list(mtd1$est_iso), mtd_dose = mtd_identified)
+    return(t0)
+  }
+  mtd0 <- purrr::map_dfr(.x = 1:nsim, .f = find_mtd_index, target = target)
+  iso_est <- matrix(mtd0 %>% select(iso) %>% tidyr::unnest(1) %>% 
+                    as.matrix(), nrow = nsim, byrow = TRUE)
+  mtds <- mtd0$mtd_dose
+  
+  sum1 <- mtd_oc_summary(subjs = subjs, ntoxs = ntoxs, mtds = mtds, isoest = iso_est) %>% 
+    mutate(dose = 1:length(ptox), ptox = ptox) %>% select(dose, ptox, everything())
+  sum2 <- nsubj_summary(subjs = subjs, ntoxs = ntoxs, mtds = mtds)
+  
+  s0 <- table(obj$end_trial)/nsim
+  sum3 <- tibble::tibble(end_reason = names(s0), prob = s0)
+  
+  return(list(oc = sum1, n_sum = sum2, stop_reason = sum3))
+  
 }
 
 
 
-## BOIN Decision Matrix
-boin_decision <- function(target_tox, cohort_cap, ...){
-  
-  bound <- BOIN::get.boundary(target = target_tox, ncohort = 100, 
-                              cohortsize = 3)
-  
-  temp2 <- bound$full_boundary_tab %>% as_tibble() %>% 
-    mutate(type = c("nsbj", "E", "D", "DU")) %>%
-    gather(key = "nsbj", value = "DLT", -type) %>% 
-    mutate(nsbj = as.numeric(str_extract(nsbj, "(\\d)+"))) %>%
-    filter(type != "nsbj") %>% arrange(nsbj, DLT)
-  temp2 <- temp2[complete.cases(temp2), ]
-  
-  nsbj0 <- min(max(temp2$nsbj), cohort_cap)
-  temp3 <- purrr::map_df(1:nsbj0, .f = function(i) 
-    bind_rows(tibble::tibble(nsbj = i, DLT = 0:i)))
-  
-  temp4 <- right_join(temp2 %>% arrange(nsbj, DLT), temp3, by = c("nsbj", "DLT"))
-  temp5 <- temp2 %>% filter(nsbj <= nsbj0)%>% spread(key = type, value = DLT)
-  temp6 <- left_join(temp5, temp3, by = "nsbj") %>% 
-    mutate(decision = case_when(
-      DLT <= E ~ "E",
-      E < DLT & DLT < D ~ "S",
-      DLT >= D & (DLT < DU | is.na(DU)) ~ "D", 
-      DLT >= DU ~ "DU"
-    ))
-  
-  temp6 <- temp6 %>% select(nsbj, DLT, decision) %>% 
-    spread(key = nsbj, value = decision)
-  
-  return(temp6)
-}
-
-
-## 3 + 3 decision matrix
-hybrid33_decision <- function(){
-  
-  decision <- tibble::tibble(DLT = seq(0, 6, by = 1), 
-                             `3` = c("E", "S", "DU", "DU", rep(NA, 3)),
-                             `6` = c("E", "E", rep("DU", 5)))
-  return(decision)
-}
-
-
-
-
-
+#' Plot dose escalation path for one simulation
+#'
+#' @param escalation_table The dose escalation path
+#' @param ndose number of doses in total 
+#' @param nmax number of subjects specified for the simulation
+#'
+#' @return a ggplot object
+#' @export
+#'
+#' @examples
 plot_escalation_path <- function(escalation_table, ndose, nmax){
   
   decision_seq <- c("D", "DU", "E", "S")
@@ -153,7 +167,7 @@ plot_escalation_path <- function(escalation_table, ndose, nmax){
   fig <- ggplot(data = tmp1, aes(x = nenrolled, y = current_dose)) + 
     geom_point(aes(color = current_decision, shape = current_decision), size = 4) + 
     geom_line() + 
-    scale_x_continuous(breaks = xlabels, limits = c(0, nmax), 
+    scale_x_continuous(breaks = xlabels, limits = c(0, nmax + 2), 
                        name = "Cummulative Number of Subjects Enrolled") + 
     scale_y_continuous(breaks = 0:ndose, limits = c(0, ndose), 
                        name = "Dose Cohort") + 
@@ -166,7 +180,6 @@ plot_escalation_path <- function(escalation_table, ndose, nmax){
     geom_text(label = show_text, check_overlap = TRUE, nudge_y = -0.1, nudge_x = 0.5, color = "blue") +
     ggplot2::ggtitle("Dose Escalation Path", subtitle = "Note: for a given dose cohort, x/x = Cum. N toxicity/Cum. N enrolled")
     
-
   
     return(fig)  
   

@@ -1,7 +1,7 @@
 #' given speficied parameter, simulate toxicity outcomes
 #'
 #' @param nsim number of simulations
-#' @param ptox the toxicity levels
+#' @param ptox a vector of probabilities of toxicity at each dose level
 #' @param nmax_perdose for each dose level, the max number of subjects allowed
 #'   (for simulation purpose, this number can be set large, e.g. 100)
 #' @param seed simulation seed for reproducibility purpose
@@ -208,8 +208,131 @@ run_dose_escalation_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax
     
   }
   
-  return(escalation_table)
+  return(tibble::tibble(nsubj = list(ncum_cohort), 
+               ntox = list(ncum_tox), 
+               esca = list(escalation_table), 
+               end_trial = res0$skip_reason))
   
 } 
+
+
+
+#' @author Bin Zhuo \email{bzhuo@amgen.com}
+#' @title A wrapper to run parallel simulations
+#'
+#' @param ncores number of cores needed
+#' @param nsim number of simulation to run
+#' @param seed the general seed, will generate a sequence of \code{nsim} subseed
+#'   for each simulation
+#' @param core_fun the function to be run in parallel. This usually corresponds
+#'   to the `one_trial` function that you want to repeat \code{nsim} times
+#' @param combine_method how should the parallel results be combined, e.g.,
+#'   `rbind` or `bind_rows` for row bind, or `cbind` or `bind_cols` for column
+#'   bind
+#' @param parallel logical `TRUE` or `FALSE`, if `FALSE` use for loop instead of
+#'   parallel. Sometimes `parallel = FALSE` is useful for debugging the function.
+#' @param package_used packages to be used in the `foreach` loop. Only needed if
+#'   you are running in Windows platform, otherwise just keep the default `NULL`
+#' @param file_to_source set to `NULL` by default; if running on Windows
+#'   platform, need to specify which `.R` files to be sourced in `foreach` loop;
+#' @param verbose_show logical flag `TRUE` or `FALSE` enabling verbose messages.
+#'   This can be very useful for trouble shooting.
+#' @param ... arguments inherited from `core_fun`
+#'
+#' @return a tibble of requested form
+#' @export
+#'
+#' @examples
+#' run_one <- function(seed, x){
+#' set.seed(seed)
+#' mean(rnorm(1000, mean = x))
+#' }
+#'
+#' run_two <- function(seed, x){
+#'   set.seed(seed)
+#'   tibble::tibble(y = mean(rnorm(1000, mean = x)))
+#' }
+#'
+#' # if function returns a single value, can use `rbind` or `cbind`
+#' temp1 <- run_parallel_sim(ncores = 2, nsim = 1000,
+#'                           seed = 123, core_fun = run_one,
+#'                           x = 10, parallel = TRUE,
+#'                           combine_method = rbind)
+#'
+#'
+#' # can swithc parallel to be FALSE to run for loop
+#' temp2 <- run_parallel_sim(ncores = NA, nsim = 1000,
+#'                           seed = 123, core_fun = run_one,
+#'                           x = 10, parallel = FALSE,
+#'                           combine_method = rbind)
+#'
+#' # if function returns a tibble, can use `bind_rows` or `bind_cols`
+#' temp3 <- run_parallel_sim(ncores = 50, nsim = 1000,
+#'                           seed = 123, core_fun = run_two,
+#'                           x = 10, parallel = TRUE,
+#'                           combine_method = bind_rows)
+
+run_parallel_sim <- function(ncores, nsim, seed, core_fun,
+                             combine_method = bind_rows, parallel = TRUE,
+                             package_used = NULL, file_to_source = NULL,
+                             verbose_show = FALSE, ...){
+  
+  # generate a sequence of seed
+  set.seed(seed)
+  subseed <- sample(1:1e7, nsim)
+  
+  if(!parallel){  # run for loop
+    t1 <- NULL
+    for(k in 1:nsim){
+      t0 <- core_fun(seed = subseed[k], ...)
+      t1 <- combine_method(t1, t0)
+    }
+    
+  }  else if(parallel){ # go parallel
+    
+    ncores_avail <- parallel::detectCores()
+    if(ncores >= ncores_avail){
+      
+      ncores <- floor(ncores_avail * 0.9)
+      warning(paste("number of cores available is", ncores_avail,
+                    ", using", ncores, "cores (90%) instead"))
+    }
+    
+    # register cluster, windows and linux have different behaviors
+    platform <- .Platform
+    if(platform$OS.type == "windows"){
+      # will need to source code and load packages within foreach loop
+      cl <- parallel::makeCluster(ncores)
+      
+    } else { # when type = "FORK" used, no package will be asked to specify
+      cl <- parallel::makeCluster(ncores, type = "FORK")
+      
+    }
+    
+    doParallel::registerDoParallel(cl)
+    
+    library(foreach)
+    
+    t1 <- foreach(k = 1:nsim, .combine = combine_method,
+                  .packages = package_used, .verbose = verbose_show) %dopar% {
+                    
+                    if(platform$OS.type == "windows"){
+                      
+                      if(!is.null(file_to_source)){ # load the R files as needed
+                        for(kk in 1:length(file_to_source)){
+                          source(file_to_source[kk])
+                        }
+                      }
+                    }
+                    
+                    # run the simulations
+                    t0 <- core_fun(seed = subseed[k], ...)
+                    return(t0)
+                  }
+    parallel::stopCluster(cl)
+  }
+  return(t1)
+}
+
 
 
