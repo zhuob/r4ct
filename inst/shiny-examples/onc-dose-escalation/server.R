@@ -1,32 +1,62 @@
 
 modules <- new.env()
-for(util_files in dir(path = ".", pattern = "fun.R", all.files = TRUE, full.names = TRUE)){
+files <- dir(path = ".", pattern = "fun.R", all.files = TRUE, full.names = TRUE)
+for(util_files in files){
   source(util_files)#, local = modules)
 }
-
 
 server <- function(input, output, data, session){
   
   require("r4ct")
   require("ggplot2")
   require("magrittr")
+  require(dplyr)
+  
+  
+  # make all parameters reactive 
+  # Decision table page ----------------------
+  target1       <- reactive(input$target)
+  e11           <- reactive(input$e1)
+  e22           <- reactive(input$e2)
+  nmax_perdose1 <- reactive(input$nmax_perdose)
+  a1            <- reactive(input$a)
+  b1            <- reactive(input$b)
+  tox1          <- reactive(input$tox)
+  dmethod1      <- reactive(input$dmethod)
+  
+  # Simulation page --------------------------
+  nmax1         <- reactive(input$nmax)
+  cohortsize1   <- reactive(input$cosize)
+  nmax_perdose1 <- reactive(input$nmax_perdose)
+  ptox1         <- reactive(input$truetox)
+  dslv_start1   <- reactive(input$startdose)
+  nsim1         <- reactive(input$nsim)
+  simseed1      <- reactive(input$simseed)
+  isim1         <- reactive({req(input$isim); input$isim})
+  
+  ## Estimating MTD page ---------------------
+  neach1        <- reactive(input$neach)
+  dlteach1      <- reactive(input$dlteach)
+  target2       <- reactive(input$target2)
+  yupper1       <- reactive(input$yupper)
+  
   
   # bslib::bs_themer()
   #  browser()
 
   # tabPanel = 1 --------------------------------------------------------------
-  dmat <- reactive(mtpi2_decision_matrix(cocap = input$cocap,
-                                target = input$target,
-                                a = input$a,
-                                b = input$b,
-                                tolerance1 = input$e1,
-                                tolerance2 = input$e2,
-                                tox = input$tox,
-                                method = input$dmethod))
+  dmat <- reactive(mtpi2_decision_matrix(cocap = nmax_perdose1(),
+                                target = target1(),
+                                a = a1(),
+                                b = b1(),
+                                tolerance1 = e11(),
+                                tolerance2 = e22(),
+                                tox = tox1(),
+                                method = dmethod1()))
 
   # validate a and b
   output$valid_prior <- renderText({
-    if(input$a < 0 | input$b < 0){
+    if(a1() < 0 | b1() < 0){
       validate("Priors `a` and `b` must be POSITIVE!")
     }
   })
@@ -67,29 +97,120 @@ server <- function(input, output, data, session){
   
   # tabPanel = 2 --------------------------------------------------------------
   
+  run_sim <- eventReactive(input$gosim, {
+    
+    ncpu <- parallel::detectCores()
+    ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
+    
+    objs <- run_parallel_sim(ncores = ncpu - 2, 
+                             nsim = nsim1(), 
+                             core_fun = run_dose_escalation, 
+                             combine_method = bind_rows, 
+                             seed = simseed1(), 
+                             parallel = FALSE, 
+                             file_to_source = files, 
+                             package_used = NULL, 
+                             verbose_show = FALSE, 
+                             ptox = ptox0,  
+                             nmax_perdose = nmax_perdose1(), 
+                             dslv_start = dslv_start1(), 
+                             dmat = dmat(), 
+                             nmax = nmax1(), 
+                             cohortsize = cohortsize1())
+    
+    return(objs)
+    
+  })
+  
+  
+  res0 <- reactive({
+    ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
+    process_multiple_sim(obj = run_sim(), ptox = ptox0, target = target1())
+    })
+
+
+  output$oc_table <- DT::renderDataTable({
+    # res0()$oc
+    oc0 <- res0()$oc
+    names(oc0) <- c("Dose", "Tox Risk", "Prob. MTD Selected", "Prob. Dose Tested",
+                    "Expected N (Tested)", "Expected DLT (Tested)", "Prob. DLT (Tested)",
+                    "Expected Isotonic Estimate")
+
+    oc0 %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(3:8))
+  })
+
+  output$n_table <- DT::renderDataTable({
+    ntable0 <- res0()$n_sum
+    names(ntable0) <- c("Type of Summary", "Min", "Median", "Max", "Mean", "SD")
+    ntable0 %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(5, 6))
+  })
+
+  output$stop_table <- DT::renderDataTable({
+    stop0 <- res0()$stop_reason
+    names(stop0) <- c("Reason for Trial Stop", "Probability")
+    stop0
+  }, rownames = FALSE)
+
+  
+  # select example trial to view
+  samp_trial <- reactive({
+    run_sim() %>% dplyr::select(esca) %>% dplyr::slice(isim1()) %>% tidyr::unnest(1)
+    })
+  
+  output$trial_path <- renderPlot({
+   
+    ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
+    plot_escalation_path(escalation_table = samp_trial(), ndose = length(ptox0), nmax1())
+  })
+  
+  output$isim_result <- DT::renderDT({
+    tmp0 <- samp_trial()
+    names(tmp0) <- c("Step", "Cum. N", "N (Current Cohort)", "N Tox. (Current Cohort)", 
+                     "Current Dose", "Current Decision", "Next Dose", "Skip The Dose?", 
+                     "Skip Reason")
+    DT::datatable(tmp0, rownames = FALSE)
+    
+  })
+
+  output$isim_iso <- DT::renderDataTable({
+    tmp <- samp_trial() %>% group_by(current_dose) %>%
+      dplyr::summarise(n_current = sum(n_current), ntox = sum(ntox))
+
+    tmp1 <- estimate_dlt_isoreg(cohort_size = tmp$n_current,
+                        n_dlt = tmp$ntox, target = target1()) %>%
+            mutate(dose = unique(tmp$current_dose)) %>%
+            select(dose, everything())
+
+    names(tmp1) <- c("Dose", "N", "DLTs", "Raw Estimate", "Isotonic Estimate", "MTD Indicator")
+    DT::datatable(tmp1, rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(4, 5))
+
+  })
+  
   # tabPanel = 3 --------------------------------------------------------------
   
   est_dlt <- eventReactive(input$goiso, {
     
     # a vector of cohort size
-    n_cohort <- as.integer(unlist(strsplit(input$neach,","))) 
+    n_cohort <- as.integer(unlist(strsplit(neach1(),","))) 
     # number of DLTs experienced in each cohort
-    dlts <- as.integer(unlist(strsplit(input$dlteach,",")))
+    dlts <- as.integer(unlist(strsplit(dlteach1(),",")))
     
     if(length(n_cohort)!=length(dlts)) stop("Length of doses and that of DLTs do not match!")
     
-    temp <- estimate_dlt_isoreg(cohort_size = n_cohort, n_dlt = dlts, input$target2)
+    temp <- estimate_dlt_isoreg(cohort_size = n_cohort, n_dlt = dlts, target2())
     # temp$trueDLT <- trueDLT2
-    names(temp) <- c("Dose", "N for Each Dose", "# DLT", "Raw Est.", "ISO. Est.", "MTD")
+    names(temp) <- c("N for Each Dose", "# DLT", "Raw Est.", "ISO. Est.", "MTD") 
+    temp$Dose <- 1:nrow(temp)
+    temp <- temp %>% select(Dose, everything())
     temp
   })  
   
   
   output$iso <- DT::renderDataTable({
-    est_dlt() %>% DT::datatable() %>% DT::formatRound(digits = 3, columns = c(4, 5)) 
-  }, rownames = FALSE)
+    est_dlt() %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(4, 5)) 
+  })
   
-  iso_fig <- reactive(plot_iso_estimate(dat1 = est_dlt(), target = input$target2, yupper = input$yupper))
+  iso_fig <- reactive(plot_iso_estimate(dat1 = est_dlt(), target = target2(), yupper = yupper1()))
   
   output$iso_est <- renderPlot({
     iso_fig()

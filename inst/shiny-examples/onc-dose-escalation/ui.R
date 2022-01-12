@@ -13,7 +13,7 @@ escalation_page <- fluidRow(
     fluidRow(
       column(8, 
              fluidRow(
-               sliderInput(inputId = "cocap", label = "Cohort Cap", min = 0, max = 50, value = 10, step = 1), 
+               sliderInput(inputId = "nmax_perdose", label = "Max N per dose", min = 0, max = 50, value = 10, step = 1), 
                sliderInput(inputId = "tox",   label = "Unacceptable Toxicity: Prob(Overdosing)", min = 0, max = 1, value = 0.95, step = 0.01)
                )
              ), 
@@ -54,35 +54,79 @@ escalation_page <- fluidRow(
 simulation_page <- fluidRow(
   wellPanel(
   
-  tags$strong(h3("Simulation Parameters")),
-  fileInput(inputId = "upload_dmat", label = "Optional: Choose a CSV File to Replace Existing Decision Matrix", accept = c(".csv", ".xlsx", ".txt")),
-  
-  fluidRow(
-    column(4, numericInput(inputId = "nsim", label = "Number of Simulations", value = 10000, min = 1, max = 1e7)), 
-    column(4, numericInput(inputId = "simseed", label = "Simulation Seed (for reproducibility purpose)", value = 1234)), 
-    column(4, textInput(inputId = "truedlt", label = "Enter a Vector of True DLT Probabilities (seperated by ',') ", 
-                        value = "0.05,0.1,0.2,0.25,0.3,0.35"))
-  ),
-  
-  fluidRow(
-    column(6, 
-           sliderInput(inputId = "nmax", 
-                       label = h6("Maximum Sample Size for the Trial", tags$strong(tags$span(style = "color:red", "\n(Must be a multiple of Group Size)"))),
-                       value = 54, min = 10, max = 100, step = 1), 
-           sliderInput(inputId = "cosize", label = h6("Group Size"), value = 3,  min = 1,  max = 10,  step = 1)
-           ),
+    tags$strong(h3("Simulation Parameters")),
+    fileInput(inputId = "upload_dmat", label = "Optional: Choose a CSV File to Replace Existing Decision Matrix", accept = c(".csv", ".xlsx", ".txt")),
     
-    column(6, 
-           sliderInput(inputId = "ndose", label = h6("Number of Doses"), value = 6, min = 2, max = 10, step = 1), 
-           sliderInput("startdose", label = "Choose dose level to start with", value = 3, min = 1, max = 6)
-          )
-  )
+    fluidRow("Number of subjects",
+      column(6, 
+             sliderInput(inputId = "nmax", label = h6("Maximum Sample Size for the Trial"), value = 54, min = 10, max = 100, step = 1)
+             ),
+      column(6, 
+             sliderInput(inputId = "cosize", label = h6("Number of subjects at each cohort" , tags$strong("(note: each dose level can have multiple cohorts)")), value = 3,  min = 1,  max = 10,  step = 1)
+             )
+    ),  
+      
+    fluidRow(
+      column(8, textInput(inputId = "truetox", label = "Enter a Vector of True DLT Probabilities (seperated by ',') ", 
+                          value = "0.05,0.1,0.2,0.25,0.3,0.35")
+             ),
+      column(4, 
+             sliderInput("startdose", label = "Choose dose level to start with", value = 3, min = 1, max = 6)
+             )
+    ),
   
-), 
-  actionButton(inputId = "gosim", label = "Run Simulation", icon = icon("forward"), class = "btn-success")
+    
+    fluidRow(
+      column(4, numericInput(inputId = "nsim", label = "Number of Simulations", value = 100, min = 1, max = 1e5)), 
+      column(4, numericInput(inputId = "simseed", label = "Simulation Seed (for reproducibility purpose)", value = 1234))
+    ),
+    
+  
+  ), 
+  actionButton(inputId = "gosim", label = "Run Simulation", icon = icon("forward"), class = "btn-success"),
+
+  conditionalPanel(condition = "input.gosim == true",
+    wellPanel(
+      tags$strong(h3("Simulation Result")), 
+      
+      fluidRow(
+        tabsetPanel(
+          
+          tabPanel(title = h4("Summary Result"), 
+                   fluidRow(
+                     column(12, h3("Operating Characteristics")), 
+                     column(12, DT::dataTableOutput(outputId = "oc_table")),
+                     column(12, h3("Number of Subjects Summary")),
+                     column(12, DT::dataTableOutput(outputId = "n_table")), 
+                     column(12, h3("Trial Stopping Reason")),
+                     column(12, DT::dataTableOutput(outputId = "stop_table"))
+                     )
+                   ), 
+                            
+          tabPanel(title = h4("Individual Trial"), 
+                   fluidRow(
+                     column(12,  numericInput(inputId = "isim", 
+                                              label = "Specify a simulation you want to view", 
+                                              value = NULL, min = 1, max = 1e5)
+                            )
+                     ),
+                   fluidRow(
+                     column(12, h3("Dose Escalation Path")),
+                     column(12, plotOutput(outputId = "trial_path")),
+                     column(12, h3("Simulation Result")),
+                     column(12, DT::dataTableOutput(outputId = "isim_result")), 
+                     column(12, h3("MTD Identification")),
+                     column(12, DT::dataTableOutput(outputId = "isim_iso"))
+                   )
+          )
+        )
+      )
+    )
+  )
 )
 
 
+#  Estimating MTD panel -------------------------------------------------------
 toxest_page     <- fluidRow(
   wellPanel(
     h3("Estimating MTD"),
