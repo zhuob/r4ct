@@ -7,10 +7,11 @@ for(util_files in files){
 
 server <- function(input, output, data, session){
   
+  # bslib::bs_themer()
   require("r4ct")
   require("ggplot2")
   require("magrittr")
-  require(dplyr)
+  require("dplyr")
   
   
   # make all parameters reactive 
@@ -41,25 +42,44 @@ server <- function(input, output, data, session){
   yupper1       <- reactive(input$yupper)
   
   
-  # bslib::bs_themer()
   #  browser()
 
   # tabPanel = 1 --------------------------------------------------------------
-  dmat <- reactive(mtpi2_decision_matrix(cocap = nmax_perdose1(),
-                                target = target1(),
-                                a = a1(),
-                                b = b1(),
-                                tolerance1 = e11(),
-                                tolerance2 = e22(),
-                                tox = tox1(),
-                                method = dmethod1()))
-
+  dmat <- reactive({
+    
+    if(dmethod1() %in% c("mtpi", "mtpi2")){
+      
+      mtpi2_decision_matrix(cocap = nmax_perdose1(),
+                            target = target1(),
+                            a = a1(),
+                            b = b1(),
+                            tolerance1 = e11(),
+                            tolerance2 = e22(),
+                            tox = tox1(),
+                            method = dmethod1())
+  
+    } else if (dmethod1() == "hybrid 3+3"){
+      hybrid33_decision() 
+    } else if (dmethod1() == "BOIN"){
+      boin_decision(target_tox = target1(), cohort_cap = nmax_perdose1(), 
+                    p.saf = input$saf, p.tox = input$uaf, cutoff.eli = input$tox)
+    }
+    
+  })
   # validate a and b
   output$valid_prior <- renderText({
     if(a1() < 0 | b1() < 0){
       validate("Priors `a` and `b` must be POSITIVE!")
     }
   })
+  
+  
+  observe({
+    updateSliderInput(session, inputId = "saf", value = 0.6 * target1())
+   updateSliderInput(session, inputId = "uaf", value = 1.4 * target1())
+    
+  })
+  
   
   dmat_plot <- reactive(plot_decision_matrix(dtab = dmat()))
   
@@ -97,6 +117,25 @@ server <- function(input, output, data, session){
   
   # tabPanel = 2 --------------------------------------------------------------
   
+  
+  dmat1 <- reactive({
+    if(!rlang::is_empty(input$upload_dmat)){
+      d1 <- readr::read_csv(input$upload_dmat$datapath, col_names = FALSE) %>% as.matrix()
+      # browser()
+    } else{
+      d1 <- dmat() # use the decision table from the first page
+    }
+    return(d1)
+  })
+  
+  
+  output$upload_dmat <- renderPlot({
+    #req(input$upload_dmat)
+    plot_decision_matrix(dtab = dmat1())
+  })
+  
+  
+  
   run_sim <- eventReactive(input$gosim, {
     
     ncpu <- parallel::detectCores()
@@ -107,14 +146,14 @@ server <- function(input, output, data, session){
                              core_fun = run_dose_escalation, 
                              combine_method = bind_rows, 
                              seed = simseed1(), 
-                             parallel = FALSE, 
+                             parallel = TRUE, 
                              file_to_source = files, 
                              package_used = NULL, 
                              verbose_show = FALSE, 
                              ptox = ptox0,  
                              nmax_perdose = nmax_perdose1(), 
                              dslv_start = dslv_start1(), 
-                             dmat = dmat(), 
+                             dmat = dmat1(), 
                              nmax = nmax1(), 
                              cohortsize = cohortsize1())
     
