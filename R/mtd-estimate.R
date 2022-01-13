@@ -134,37 +134,32 @@ mtpi2_decision_matrix <- function(cocap, target, a, b, tolerance1, tolerance2, t
 plot_decision_matrix <- function(dtab){
   
   ndlt <- decision <- NULL
-  # the maximum number of subjects in a cohort
-  cocap <- ncol(dtab)
   
-  # Find the starting row that will not display (because all are "DU")
-  for(i in 1:(cocap+1)) {
-    if(is.na(any(dtab[i,]=="D" | dtab[i,]=="S" | dtab[i,]=='E')==FALSE)) {
-      cut <- i+1
-      break
-    } 
-  }
-  sub_dtab <- dtab[-(cut:(cocap + 1)), ]
+  sub_dtab <- dtab
   ntox <- rep(0:(nrow(sub_dtab)-1), ncol(sub_dtab))
   nsubj <- rep(1:ncol(sub_dtab), each = nrow(sub_dtab))
   sub_dtab_reform <- tibble::tibble(ndlt = ntox, nsubj, decision = as.vector(sub_dtab)) %>%
-    dplyr::filter(!is.na(decision)) %>% 
+   # dplyr::filter(!is.na(decision)) %>% 
     dplyr::mutate(nsubj = factor(nsubj, levels = unique(nsubj)), 
-                  ndlt = factor(ndlt, levels = unique(ntox)))
+                  ndlt = factor(ndlt, levels = unique(ntox)), 
+                  decision = ifelse(is.na(decision), "NA", decision)) %>% 
+    dplyr::mutate(decision = factor(decision, levels = c("D", "DU", "E", "S", "NA")))
   
   ## generate the decision table
-  fig <- ggplot2::ggplot(data = sub_dtab_reform, ggplot2::aes(x = nsubj, y = ndlt, fill = decision)) + 
-    ggplot2::geom_tile(color = "white") + 
+  fig <- ggplot2::ggplot(data = sub_dtab_reform, ggplot2::aes(x = nsubj, y = ndlt)) + 
+    ggplot2::geom_tile(aes(fill = decision), color = "white", width = 0.5, height = 0.5) + 
+    ggplot2::theme_bw() +
     ggplot2::scale_y_discrete(limits = rev(levels(sub_dtab_reform$ndlt))) + 
     ggplot2::scale_x_discrete(position = "top") + 
-    ggplot2::scale_fill_manual(values = c("#d34d2f", "#660000",  "#00FF33", "#CC9900"), 
-                               labels = c("D", "DU", "E", "S")) + 
+    ggplot2::scale_fill_manual(values = c( "D" = "#d34d2f", "DU" =  "#660000",  
+                                           "E" = "#00FF33", "S" = "#CC9900", "NA" = "#CCCCCC"), 
+                               labels = c("D", "DU", "E", "S", "NA")) + 
     ggplot2::theme(legend.position = "bottom", 
                    axis.text = ggplot2::element_text(face = "bold", size = 15), 
                    axis.title = ggplot2::element_text(face = "bold", size = 20), 
                    plot.title = ggplot2::element_text(face = "bold", size = 25)
     ) + 
-    ggplot2::labs( x = "Number of Subjects at Current Dose", y = "Number of DLTs")
+    ggplot2::labs( x = "Number of Subjects at Current Dose", y = "Number of DLTs") 
   
   return(fig)
   
