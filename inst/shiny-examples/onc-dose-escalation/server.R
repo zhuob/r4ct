@@ -45,6 +45,7 @@ server <- function(input, output, data, session){
   #  browser()
 
   # tabPanel = 1 --------------------------------------------------------------
+  # ----------------------------------------------------------------------------------------------------------------------------
   dmat <- reactive({
     
     if(dmethod1() %in% c("mtpi", "mtpi2")){
@@ -77,6 +78,8 @@ server <- function(input, output, data, session){
   observe({
     updateSliderInput(session, inputId = "saf", value = 0.6 * target1())
    updateSliderInput(session, inputId = "uaf", value = 1.4 * target1())
+   ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
+   updateSliderInput(session, inputId = "startdose", max = length(ptox0))
     
   })
   
@@ -116,7 +119,7 @@ server <- function(input, output, data, session){
   )
   
   # tabPanel = 2 --------------------------------------------------------------
-  
+  # ----------------------------------------------------------------------------------------------------------------------------
   
   dmat1 <- reactive({
     if(!rlang::is_empty(input$upload_dmat)){
@@ -135,38 +138,49 @@ server <- function(input, output, data, session){
   })
   
   
+  # run_sim <- reactiveValues(objs = NULL)
+  
+  
   
   run_sim <- eventReactive(input$gosim, {
     
     ncpu <- parallel::detectCores()
     ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
     
-    objs <- run_parallel_sim(ncores = ncpu - 2, 
-                             nsim = nsim1(), 
-                             core_fun = run_dose_escalation, 
-                             combine_method = bind_rows, 
-                             seed = simseed1(), 
-                             parallel = TRUE, 
-                             file_to_source = files, 
-                             package_used = NULL, 
-                             verbose_show = FALSE, 
-                             ptox = ptox0,  
-                             nmax_perdose = nmax_perdose1(), 
-                             dslv_start = dslv_start1(), 
-                             dmat = dmat1(), 
-                             nmax = nmax1(), 
-                             cohortsize = cohortsize1())
+    # for 3+3 max N is 6 per dose
+    if(dmethod1() == "hybrid 3+3"){
+      nmax_perdose2 <- 6 
+    } else{
+      nmax_perdose2 <- nmax_perdose1()
+    }
     
-    return(objs)
+    run_parallel_sim(ncores = ncpu - 2, 
+                     nsim = nsim1(), 
+                     core_fun = run_dose_escalation, 
+                     combine_method = bind_rows, 
+                     seed = simseed1(), 
+                     parallel = TRUE, 
+                     file_to_source = files, 
+                     package_used = NULL, 
+                     verbose_show = FALSE, 
+                     ptox = ptox0,  
+                     nmax_perdose = nmax_perdose2, 
+                     dslv_start = dslv_start1(), 
+                     dmat = dmat1(), 
+                     nmax = nmax1(), 
+                     cohortsize = cohortsize1())
     
   })
   
-  
-  res0 <- reactive({
+  res0 <- eventReactive(input$gosim, {
+    
     ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
+    # browser()
     process_multiple_sim(obj = run_sim(), ptox = ptox0, target = target1())
+    # res0$oc <- tmp1$oc
+    # res0$n_sum <- tmp1$n_sum 
+    # res0$stop_reason <- tmp1$stop_reason
     })
-
 
   output$oc_table <- DT::renderDataTable({
     # res0()$oc
@@ -226,7 +240,7 @@ server <- function(input, output, data, session){
   })
   
   # tabPanel = 3 --------------------------------------------------------------
-  
+  # ----------------------------------------------------------------------------------------------------------------------------
   est_dlt <- eventReactive(input$goiso, {
     
     # a vector of cohort size
