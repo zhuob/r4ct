@@ -36,44 +36,8 @@ simulation_module <- function(){
     ), 
     actionButton(inputId = "gosim", label = "Run Simulation", icon = icon("forward"), class = "btn-success"),
     
-    conditionalPanel(condition = "input.gosim == true",
-                     wellPanel(
-                       tags$strong(h3("Simulation Result")), 
-                       
-                       fluidRow(
-                         tabsetPanel(
-                           
-                           tabPanel(title = h4("Summary Result"), 
-                                    fluidRow(
-                                      column(12, h3("Operating Characteristics")), 
-                                      column(12, DT::dataTableOutput(outputId = "oc_table")),
-                                      column(12, h3("Number of Subjects Summary")),
-                                      column(12, DT::dataTableOutput(outputId = "n_table")), 
-                                      column(12, h3("Trial Stopping Reason")),
-                                      column(12, DT::dataTableOutput(outputId = "stop_table"))
-                                    )
-                           ), 
-                           
-                           tabPanel(title = h4("Individual Trial"), 
-                                    fluidRow(
-                                      column(12,  numericInput(inputId = "isim", 
-                                                               label = "Specify a simulation you want to view", 
-                                                               value = NULL, min = 1, max = 1e5)
-                                      )
-                                    ),
-                                    fluidRow(
-                                      column(12, h3("Dose Escalation Plot")),
-                                      column(12, plotOutput(outputId = "trial_path")),
-                                      column(12, h3("Dose Escalation Table")),
-                                      column(12, DT::dataTableOutput(outputId = "isim_result")), 
-                                      column(12, h3("MTD Identification")),
-                                      column(12, DT::dataTableOutput(outputId = "isim_iso"))
-                                    )
-                           )
-                         )
-                       )
-                     )
-    )
+    uiOutput(outputId = "simulation_output")
+
   )
     
 }

@@ -1,3 +1,9 @@
+require("r4ct")
+require("ggplot2")
+require("magrittr")
+require("dplyr")
+require("bslib")
+require("shinycssloaders")
 
 modules <- new.env()
 files <- dir(path = ".", pattern = "fun.R", all.files = TRUE, full.names = TRUE)
@@ -7,11 +13,7 @@ for(util_files in files){
 
 server <- function(input, output, data, session){
   
-  # bslib::bs_themer()
-  require("r4ct")
-  require("ggplot2")
-  require("magrittr")
-  require("dplyr")
+  bslib::bs_themer()
   
   
   # make all parameters reactive 
@@ -140,7 +142,52 @@ server <- function(input, output, data, session){
   
   # run_sim <- reactiveValues(objs = NULL)
   
-  
+  output$simulation_output <- renderUI({
+    
+    if(input$gosim == FALSE){
+      return(div())
+    }
+
+     wellPanel(
+       tags$strong(h3("Simulation Result")), 
+       
+       fluidRow(
+         tabsetPanel(
+           
+           tabPanel(title = h4("Summary Result"), 
+                    fluidRow(
+                      column(12, h3("Operating Characteristics")), 
+                      column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "oc_table"))),
+                      column(12, h3("Number of Subjects Summary")),
+                      column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "n_table"))), 
+                      column(12, h3("Trial Stopping Reason")),
+                      column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "stop_table")))
+                    )
+           ), 
+           
+           tabPanel(title = h4("Individual Trial"), 
+                    fluidRow(
+                      column(12,  numericInput(inputId = "isim", 
+                                               label = "Specify a simulation you want to view", 
+                                               value = NULL, min = 1, max = 1e5)
+                      )
+                    ),
+                    fluidRow(
+                      column(12, h3("Dose Escalation Plot")),
+                      column(12, shinycssloaders::withSpinner(plotOutput(outputId = "trial_path"))),
+                      column(12, h3("Dose Escalation Table")),
+                      column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "isim_result"))), 
+                      column(12, h3("MTD Identification")),
+                      column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "isim_iso")))
+                    )
+           )
+         )
+       )
+     )
+
+    
+    
+  })
   
   run_sim <- eventReactive(input$gosim, {
     
@@ -241,8 +288,37 @@ server <- function(input, output, data, session){
   
   # tabPanel = 3 --------------------------------------------------------------
   # ----------------------------------------------------------------------------------------------------------------------------
-  est_dlt <- eventReactive(input$goiso, {
+  
+  
+  output$mtd_estimate <- renderUI({
     
+    if(input$goiso == FALSE){ 
+      return(div())
+      }
+      fluidRow(
+        fluidRow(
+          column(8, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "iso"))),
+          column(4, downloadButton(outputId = "dld_iso_tab", label = "Download Table", class = "btn-info"))
+        ),
+
+        tags$br(),
+        fluidRow(
+          column(8, plotOutput("iso_est")),
+          column(4,
+                 sliderInput(inputId = "yupper", label = "Adjust scale on Y-axis", min = 0.1, max = 1, value = 0.5, step = 0.01),
+                 sliderInput(inputId = "fig_width", label = "Figure Width (for download only)", min = 1, max = 20, value = 7, step = 0.5),
+                 sliderInput(inputId = "fig_height", label = "Figure Height (for download only)", min = 1, max = 20, value = 7, step = 0.5),
+                 downloadButton(outputId = "dld_iso_fig", label = "Download Plot", class = "btn-info"))
+                 )
+      )
+    
+    
+  })
+  
+  
+  
+  est_dlt <- eventReactive(input$goiso, {
+    Sys.sleep(0.5)
     # a vector of cohort size
     n_cohort <- as.integer(unlist(strsplit(neach1(),","))) 
     # number of DLTs experienced in each cohort
@@ -260,6 +336,7 @@ server <- function(input, output, data, session){
   
   
   output$iso <- DT::renderDataTable({
+   
     est_dlt() %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(4, 5)) 
   })
   
