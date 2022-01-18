@@ -1,5 +1,7 @@
 # r4ct 0.2.9
-
+  * expand `estimate_dlt_isoreg` so that it can exclude dose levels with DU from
+  estimating MTD. One `du` argument added
+  
 # r4ct 0.2.8
   * move function elements of `mTPI2` from the packages to the app folder
 

@@ -179,24 +179,26 @@ plot_decision_matrix <- function(dtab){
 #'   `selfCoded` for  self-implementation or `statsPackage` using
 #'   \code{\link[stats]{isoreg}}. No matter what method you choose, the results
 #'   should be identical.
+#' @param du a vector with elements 1 or 0 recording whether DU is observed in
+#'   the corresponding dose (1) or not (0)
 #'
 #' @return a table of results for the estimates
 #' @export
 #'
 #' @examples
-#'  n_dlt <- c(0,1,0,0,0,2); cohort_size <- c(3,6,3,6,3,6)
-#' estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
+#'  n_dlt <- c(0,1,0,0,0,2); cohort_size <- c(3,6,3,6,3,6); du <- c(0, 0, 0, 0, 0, 0)
+#' estimate_dlt_isoreg(cohort_size, n_dlt, du, target = 0.3)
 #'  # it also allows cohort size of 0 in a given cohort
-#'   n_dlt <- c(0,1,0,0,0, 0, 2); cohort_size <- c(3,6,3,0,6,3,6)
-#' estimate_dlt_isoreg(cohort_size, n_dlt, target = 0.3)
-estimate_dlt_isoreg <- function(cohort_size, n_dlt, target, method = "selfCoded"){
+#'   n_dlt <- c(0,1,0,0,0, 0, 2); cohort_size <- c(3,6,3,0,6,3,6); du <- c(0, 0, 0, 0, 0, 0, 1)
+#' estimate_dlt_isoreg(cohort_size, n_dlt, du, target = 0.3)
+estimate_dlt_isoreg <- function(cohort_size, n_dlt, target, du, method = "selfCoded"){
   
   if(length(cohort_size) != length(n_dlt)){
     stop("The length of cohort does not match with that of n_dlt. Please check your input!")
   }
   
   y <- cohort_size; x <- n_dlt; target_tox <- target;
-  use_y <- which(y != 0) # which cohort has enrolled patients
+  use_y <- which(y != 0 & du != 1) # which cohort has enrolled patients and no DU
   # doses <- 1:length(y); 
   est_raw <- est_iso <- mtd <- rep(NA, length(y))
   
@@ -224,7 +226,7 @@ estimate_dlt_isoreg <- function(cohort_size, n_dlt, target, method = "selfCoded"
   mtd[final_result] <- "MTD"
   
   indat <- tibble::tibble(# doses = doses, 
-    n = cohort_size, dlts = n_dlt, 
+    n = cohort_size, dlts = n_dlt, du = du, 
     est_raw = est_raw, est_iso = est_iso, mtd = mtd)
   
   return(indat)
