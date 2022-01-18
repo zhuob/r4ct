@@ -23,16 +23,16 @@ decision_table_module <- function(){
         fluidRow(
           column(8, 
                  fluidRow(
-                   sliderInput(inputId = "nmax_perdose", label = "Max N per dose", min = 0, max = 50, value = 10, step = 1), 
-                   sliderInput(inputId = "tox",   label = "Unacceptable Toxicity: Prob(Overdosing)", min = 0, max = 1, value = 0.95, step = 0.01)
+                   column(12, sliderInput(inputId = "nmax_perdose", label = "Max N per dose", min = 0, max = 50, value = 10, step = 1)), 
+                   column(12, sliderInput(inputId = "tox",   label = "Unacceptable Toxicity: Prob(Overdosing)", min = 0, max = 1, value = 0.95, step = 0.01))
                    )
                  ), 
         
           column(2, 
                  offset = 1,
                  fluidRow(
-                  numericInput(inputId = "a", label =  "Beta Prior (a)", value = 1), 
-                  numericInput(inputId = "b", label =  "Beta Prior (b)", value = 1),
+                  column(12, numericInput(inputId = "a", label =  "Beta Prior (a)", value = 1)), 
+                  column(12, numericInput(inputId = "b", label =  "Beta Prior (b)", value = 1)),
                   hr(),
                   textOutput(outputId = "valid_prior")
                   ) 
@@ -79,16 +79,16 @@ decision_table_module <- function(){
       column(4,
              fluidRow(
                tags$br(),
-               column(6, h3("Download"), offset = 2),
+               column(12, h3("Download"), offset = 0),
               # fluidRow(
-               column(5, 
+               column(6, 
                       downloadButton('downloadData1', p('Decision Plot'), class = "btn-info"),
                       ),
-               column(5, 
+               column(6, 
                       downloadButton('downloadData2', p('Decision Table'), class = "btn-info"))
                )
              ), 
-      column(6, plotOutput(outputId = "plot1"), offset = 0)
+      column(7, plotOutput(outputId = "plot1"), offset = 1)
      )
 
   )

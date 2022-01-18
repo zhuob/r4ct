@@ -115,9 +115,13 @@ process_multiple_sim <- function(obj, ptox, target){
                     as.matrix(), nrow = nsim, byrow = TRUE)
   subjs <- matrix(obj %>% select(nsubj) %>%  tidyr::unnest(1) %>%
                     as.matrix(), nrow = nsim, byrow = TRUE)
+  last_decision <- matrix(obj %>% select(last_decision) %>% tidyr::unnest(1) %>% 
+                            as.matrix(), nrow = nsim, byrow = TRUE)
   
   find_mtd_index <- function(x, target){
-    mtd1 <- estimate_dlt_isoreg(cohort_size = subjs[x, ], n_dlt = ntoxs[x, ], target = target)
+    # get the du indicator
+    du <- dplyr::if_else(last_decision[x, ] == "DU", 1, 0, missing = 0)
+    mtd1 <- estimate_dlt_isoreg(cohort_size = subjs[x, ], n_dlt = ntoxs[x, ], du = du, target = target)
     mtd_identified <- which(mtd1$mtd == "MTD")
     t0 <- tibble(iso = list(mtd1$est_iso), mtd_dose = mtd_identified)
     return(t0)

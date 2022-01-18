@@ -210,7 +210,8 @@ run_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax_perdose, cohort
   
   return(tibble::tibble(nsubj = list(ncum_cohort), 
                ntox = list(ncum_tox), 
-               esca = list(escalation_table), 
+               esca = list(escalation_table),
+               last_decision = list(dose_decision),
                end_trial = res0$skip_reason))
   
 } 

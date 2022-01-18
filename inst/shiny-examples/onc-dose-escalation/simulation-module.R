@@ -6,7 +6,7 @@ simulation_module <- function(){
       
       tags$strong(h3("Simulation Parameters")),
       fileInput(inputId = "upload_dmat", label = "Optional: Choose a CSV File to Replace Existing Decision Matrix", accept = c(".csv", ".xlsx", ".txt")),
-      plotOutput(outputId = "upload_dmat"),
+      column(8, plotOutput(outputId = "upload_dmat"), offset = 2),
       
       fluidRow(
         column(6, 
@@ -22,7 +22,7 @@ simulation_module <- function(){
                             value = "0.05,0.1,0.2,0.25,0.3,0.35")
         ),
         column(4, 
-               sliderInput("startdose", label = "Choose dose level to start with", value = 3, min = 1, max = 6)
+               sliderInput("startdose", label = "Choose dose level to start with", value = 1, min = 1, max = 6)
         )
       ),
       

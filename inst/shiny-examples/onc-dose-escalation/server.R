@@ -40,6 +40,7 @@ server <- function(input, output, data, session){
   ## Estimating MTD page ---------------------
   neach1        <- reactive(input$neach)
   dlteach1      <- reactive(input$dlteach)
+  du1           <- reactive(input$du)
   target2       <- reactive(input$target2)
   yupper1       <- reactive(input$yupper)
   
@@ -82,6 +83,7 @@ server <- function(input, output, data, session){
    updateSliderInput(session, inputId = "uaf", value = 1.4 * target1())
    ptox0 <- as.numeric(unlist(strsplit(ptox1(),",")))
    updateSliderInput(session, inputId = "startdose", max = length(ptox0))
+   updateNumericInput(inputId = "isim", max = nsim1())
     
   })
   
@@ -169,7 +171,7 @@ server <- function(input, output, data, session){
                     fluidRow(
                       column(12,  numericInput(inputId = "isim", 
                                                label = "Specify a simulation you want to view", 
-                                               value = NULL, min = 1, max = 1e5)
+                                               value = 1, min = 1, max = 1e5)
                       )
                     ),
                     fluidRow(
@@ -274,15 +276,18 @@ server <- function(input, output, data, session){
 
   output$isim_iso <- DT::renderDataTable({
     tmp <- samp_trial() %>% group_by(current_dose) %>%
-      dplyr::summarise(n_current = sum(n_current), ntox = sum(ntox))
-
-    tmp1 <- estimate_dlt_isoreg(cohort_size = tmp$n_current,
+      dplyr::summarise(n_current = sum(n_current), ntox = sum(ntox), 
+                       decision = paste(current_decision, collapse = ",")) %>% 
+      dplyr::mutate(du = ifelse(stringr::str_detect(decision, "DU"), 1, 0))
+    
+    tmp1 <- estimate_dlt_isoreg(cohort_size = tmp$n_current, du = tmp$du,
                         n_dlt = tmp$ntox, target = target1()) %>%
-            mutate(dose = unique(tmp$current_dose)) %>%
-            select(dose, everything())
+            dplyr::mutate(dose = unique(tmp$current_dose), 
+                   du = ifelse(du == 0, "NO", "YES")) %>%
+            dplyr::select(dose, dplyr::everything())
 
-    names(tmp1) <- c("Dose", "N", "DLTs", "Raw Estimate", "Isotonic Estimate", "MTD Indicator")
-    DT::datatable(tmp1, rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(4, 5))
+    names(tmp1) <- c("Dose", "N", "DLTs", "DU Observed?", "Raw Estimate", "Isotonic Estimate", "MTD Indicator")
+    DT::datatable(tmp1, rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(5, 6))
 
   })
   
@@ -295,21 +300,24 @@ server <- function(input, output, data, session){
     if(input$goiso == FALSE){ 
       return(div())
       }
-      fluidRow(
+      wellPanel(
         fluidRow(
-          column(8, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "iso"))),
-          column(4, downloadButton(outputId = "dld_iso_tab", label = "Download Table", class = "btn-info"))
+          column(9, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "iso"))),
+          column(3, downloadButton(outputId = "dld_iso_tab", label = "Download Table", class = "btn-info"))
         ),
 
         tags$br(),
+        h4("Isotonic Regression Plot"), 
         fluidRow(
           column(8, plotOutput("iso_est")),
-          column(4,
-                 sliderInput(inputId = "yupper", label = "Adjust scale on Y-axis", min = 0.1, max = 1, value = 0.5, step = 0.01),
-                 sliderInput(inputId = "fig_width", label = "Figure Width (for download only)", min = 1, max = 20, value = 7, step = 0.5),
-                 sliderInput(inputId = "fig_height", label = "Figure Height (for download only)", min = 1, max = 20, value = 7, step = 0.5),
-                 downloadButton(outputId = "dld_iso_fig", label = "Download Plot", class = "btn-info"))
+          column(4, 
+                 fluidRow(
+                   column(12, sliderInput(inputId = "yupper", label = "Adjust scale on Y-axis", min = 0.1, max = 1, value = 0.5, step = 0.01)),
+                   column(12, sliderInput(inputId = "fig_width", label = "Figure Width (for download only)", min = 1, max = 20, value = 7, step = 0.5)),
+                   column(12, sliderInput(inputId = "fig_height", label = "Figure Height (for download only)", min = 1, max = 20, value = 7, step = 0.5)),
+                   column(12, downloadButton(outputId = "dld_iso_fig", label = "Download Plot", class = "btn-info")))
                  )
+                )
       )
     
     
@@ -322,25 +330,26 @@ server <- function(input, output, data, session){
     # a vector of cohort size
     n_cohort <- as.integer(unlist(strsplit(neach1(),","))) 
     # number of DLTs experienced in each cohort
-    dlts <- as.integer(unlist(strsplit(dlteach1(),",")))
+    dlts <- as.integer(unlist(strsplit(dlteach1(),",")));
+    du   <- as.integer(unlist(strsplit(du1(), ",")))
     
     if(length(n_cohort)!=length(dlts)) stop("Length of doses and that of DLTs do not match!")
-    
-    temp <- estimate_dlt_isoreg(cohort_size = n_cohort, n_dlt = dlts, target2())
+    temp <- estimate_dlt_isoreg(cohort_size = n_cohort, n_dlt = dlts, du = du, target2()) %>% 
+      dplyr::mutate(du = ifelse(du == 1, "YES", "NO"))
     # temp$trueDLT <- trueDLT2
-    names(temp) <- c("N for Each Dose", "# DLT", "Raw Est.", "ISO. Est.", "MTD") 
+    names(temp) <- c("N for Each Dose", "# DLT", "DU observed?", "Raw Est.", "ISO. Est.", "MTD") 
     temp$Dose <- 1:nrow(temp)
     temp <- temp %>% select(Dose, everything())
     temp
   })  
-  
+
   
   output$iso <- DT::renderDataTable({
    
-    est_dlt() %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(4, 5)) 
+    est_dlt() %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(5, 6)) 
   })
   
-  iso_fig <- reactive(plot_iso_estimate(dat1 = est_dlt(), target = target2(), yupper = yupper1()))
+  iso_fig <- reactive(plot_iso_estimate(dat1 = est_dlt() %>% select(-3), target = target2(), yupper = yupper1()))
   
   output$iso_est <- renderPlot({
     iso_fig()
