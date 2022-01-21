@@ -164,6 +164,12 @@ server <- function(input, output, data, session){
                       column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "n_table"))), 
                       column(12, h3("Trial Stopping Reason")),
                       column(12, shinycssloaders::withSpinner(DT::dataTableOutput(outputId = "stop_table")))
+                    ),
+                    fluidRow(
+                      column(12, h3("Download Results")),
+                      column(4, downloadButton(outputId = "sim_oc_export", label = "Operating Characteristics", class = "btn-info" )), 
+                      column(4, downloadButton(outputId = "sim_n_export", label = "Subjects Summary", class = "btn-info" )), 
+                      column(4, downloadButton(outputId = "sim_stop_export", label = "Stopping Reason", class = "btn-info"))
                     )
            ), 
            
@@ -230,28 +236,37 @@ server <- function(input, output, data, session){
     # res0$n_sum <- tmp1$n_sum 
     # res0$stop_reason <- tmp1$stop_reason
     })
-
-  output$oc_table <- DT::renderDataTable({
+  
+  oc1 <- reactive({
     # res0()$oc
     oc0 <- res0()$oc
     names(oc0) <- c("Dose", "Tox Risk", "Prob. MTD Selected", "Prob. Dose Tested",
                     "Expected N (Tested)", "Expected DLT (Tested)", "Prob. DLT (Tested)",
                     "Expected Isotonic Estimate")
+    oc0
+  })
+  
+  ntable1 <- reactive({
+    ntable0 <- res0()$n_sum
+    names(ntable0) <- c("Type of Summary", "Min", "Median", "Max", "Mean", "SD")
+    ntable0
+  })
 
-    oc0 %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(3:8))
+  stop1 <- reactive({
+    stop0 <- res0()$stop_reason
+    names(stop0) <- c("Reason for Trial Stop", "Probability")
+    stop0 
+  })
+  
+  output$oc_table <- DT::renderDataTable({
+    oc1() %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(3:8))
   })
 
   output$n_table <- DT::renderDataTable({
-    ntable0 <- res0()$n_sum
-    names(ntable0) <- c("Type of Summary", "Min", "Median", "Max", "Mean", "SD")
-    ntable0 %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(5, 6))
+    ntable1() %>% DT::datatable(rownames = FALSE) %>% DT::formatRound(digits = 3, columns = c(5, 6))
   })
 
-  output$stop_table <- DT::renderDataTable({
-    stop0 <- res0()$stop_reason
-    names(stop0) <- c("Reason for Trial Stop", "Probability")
-    stop0
-  }, rownames = FALSE)
+  output$stop_table <- DT::renderDataTable({ stop1()}, rownames = FALSE)
 
   
   # select example trial to view
@@ -291,6 +306,44 @@ server <- function(input, output, data, session){
 
   })
   
+  
+  
+  output$sim_oc_export <- downloadHandler(
+    filename = "sim-oc-table.csv", 
+                                     
+    content = function(file){
+      
+      outdir <- setwd(tempdir())
+      on.exit(setwd(outdir), add = TRUE)
+      readr::write_csv(oc1(), file, na = "")
+      
+    }
+  )
+  
+  
+  output$sim_n_export <- downloadHandler(
+    filename = "sim-n-table.csv", 
+    
+    content = function(file){
+      
+      outdir <- setwd(tempdir())
+      on.exit(setwd(outdir), add = TRUE)
+      readr::write_csv(ntable1(), file, na = "")
+      
+    }
+  )
+  
+  output$sim_stop_export <- downloadHandler(
+    filename = "sim-stop-reason-table.csv",
+
+    content = function(file){
+      #browser()
+      outdir <- setwd(tempdir())
+      on.exit(setwd(outdir), add = TRUE)
+      readr::write_csv(stop1(), file, na = "")
+
+    }
+  )
   # tabPanel = 3 --------------------------------------------------------------
   # ----------------------------------------------------------------------------------------------------------------------------
   

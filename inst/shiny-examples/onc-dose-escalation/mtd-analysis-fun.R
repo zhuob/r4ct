@@ -136,7 +136,7 @@ process_multiple_sim <- function(obj, ptox, target){
   sum2 <- nsubj_summary(subjs = subjs, ntoxs = ntoxs, mtds = mtds)
   
   s0 <- table(obj$end_trial)/nsim
-  sum3 <- tibble::tibble(end_reason = names(s0), prob = s0)
+  sum3 <- tibble::tibble(end_reason = names(s0), prob = as.vector(s0))
   
   return(list(oc = sum1, n_sum = sum2, stop_reason = sum3))
   

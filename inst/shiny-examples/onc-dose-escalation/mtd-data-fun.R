@@ -207,6 +207,9 @@ run_once <- function(one_trial_dat, dslv_start, dmat, nmax, nmax_perdose, cohort
     current_dose <- res0$next_dose
     
   }
+  if(res0$skip_reason == "" & nenrolled == nmax){
+    res0$skip_reason <- "Max sample size reached"
+  }
   
   return(tibble::tibble(nsubj = list(ncum_cohort), 
                ntox = list(ncum_tox), 
