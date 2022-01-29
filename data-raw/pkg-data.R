@@ -14,8 +14,8 @@ if(!file.exists("data-raw/km-summary-table.csv")){
     `Data Type`                 = "PFS", 
     `Figure No. in Publication` = "Fig 2", 
     `Publication Link`          = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3646321/", 
-    `Contributor`               = "Bin Zhuo", 
-    `Email`                     = "bzhuo@amgen.com"
+    `Contributor`               = "NA", 
+    `Email`                     = "NA"
   )
   write_csv(current_km_data, "data-raw/km-summary-table.csv")
   study_data <- readr::read_csv("data-raw/nct00434642_oceans_ovariancancer_phase3_pfs_fig2.csv")

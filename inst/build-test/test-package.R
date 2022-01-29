@@ -1,6 +1,3 @@
-# devtools::install_local("../beverage_1.2.2.tar.gz", dependencies = NA, upgrade = "never")
-# devtools::install_git("https://gitlab-cfdamodelingandsimulation.devops.amgen.com/bzhuo/beverage.git", ref = "dev",
-#                       credentials = git2r::cred_user_pass("bzhuo", getPass::getPass()))
 remove.packages("r4ct", lib="~/R/win-library/4.1")
 
 path_to_pkg <- dirname(getwd())
