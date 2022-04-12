@@ -165,7 +165,7 @@ module_04$comp_01$server <- function(input, output, session, data){
         stop("Data already in database")
       } else{
         aws.s3::s3write_using(df01, FUN = readr::write_csv, object = new_name, 
-                              bucket = "amgen-cfda-dswb-projects-adhoc/designinnovation/prj_shinyapp")
+                              bucket = "abc/path/to/folder")
       
         } 
     } else{
@@ -187,7 +187,7 @@ module_04$comp_01$server <- function(input, output, session, data){
       } else{
         
         aws.s3::s3write_using(df_contribute(), FUN = readr::write_csv, object = new_name, 
-                            bucket = "amgen-cfda-dswb-projects-adhoc/designinnovation/prj_shinyapp")
+                            bucket = "abc/path/to/folder")
       
       # readr::write_csv(df_contribute(), paste0("database/", new_name, ".csv"))  
       }

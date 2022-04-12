@@ -157,7 +157,7 @@ knitr::include_graphics("www/click3.png")
 ```
 
 # Bugs and Issue Report
-Should you experience any error message, or you have any suggestion to improve this shiny app, please do not hesitate to contact **Bin Zhuo** <bzhuo@amgen.com> at Modeling and Simulation Team, Design & Innovation. 
+Should you experience any error message, or you have any suggestion to improve this shiny app, please do not hesitate to contact **BZ** <rickyb.zh@gmail.com>. 
 
 # Reference 
  

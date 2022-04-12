@@ -238,7 +238,6 @@ run_dose_escalation <- function(ptox,  nmax_perdose, dslv_start, dmat, nmax, coh
   return(tmp1)
 }
 
-#' @author Bin Zhuo \email{bzhuo@amgen.com}
 #' @title A wrapper to run parallel simulations
 #'
 #' @param ncores number of cores needed

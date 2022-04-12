@@ -126,8 +126,8 @@ run_survival <- function(time, censor, arm, control=NA, alpha = 0.025){
 # ## get existing data from the S3 bucket
 # #
 #
-# get_s3_data <- function(bucket = "amgen-cfda-dswb-projects-adhoc",
-#                         prefix = "designinnovation/prj_shinyapp"){
+# get_s3_data <- function(bucket = "NA",
+#                         prefix = "path/to/folder"){
 #
 #     current_data <- aws.s3::get_bucket(bucket = bucket, prefix = prefix,
 #                                        check_region = FALSE, verbose = TRUE) %>%
@@ -169,11 +169,11 @@ run_survival <- function(time, censor, arm, control=NA, alpha = 0.025){
 #         ####### read the old data
 #         dft1 <- aws.s3::s3read_using(FUN = readr::read_csv,
 #                                     object = info_file,
-#                                     bucket = "amgen-cfda-dswb-projects-adhoc")
+#                                     bucket = "abc")
 #
 #         dft_data <- aws.s3::s3read_using(FUN = readr::read_csv,
 #                                      object = data_file,
-#                                      bucket = "amgen-cfda-dswb-projects-adhoc")
+#                                      bucket = "abc")
 #
 #         ## change data information
 #         dft1 <- dft1 %>% dplyr::mutate(new_var = var_value[i]) %>%
@@ -189,10 +189,10 @@ run_survival <- function(time, censor, arm, control=NA, alpha = 0.025){
 #
 #         # write new data
 #         aws.s3::s3write_using(dft1, FUN = readr::write_csv, object = new_info,
-#                               bucket = "amgen-cfda-dswb-projects-adhoc/designinnovation/prj_shinyapp")
+#                               bucket = "abc/path/to/folder")
 #
 #         aws.s3::s3write_using(dft_data, FUN = readr::write_csv, object = new_data,
-#                               bucket = "amgen-cfda-dswb-projects-adhoc/designinnovation/prj_shinyapp")
+#                               bucket = "abc/path/to/folder")
 #
 #
 #     }

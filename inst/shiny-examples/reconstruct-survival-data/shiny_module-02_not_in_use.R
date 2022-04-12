@@ -44,11 +44,11 @@ test_data_table_server <- function(input, output, session ){
   index_tab <- reactive({
   
     # data3 <-aws.s3::s3read_using(FUN = readr::read_csv, object = info_path[1],
-    #                              bucket = "amgen-cfda-dswb-projects-adhoc")
+    #                              bucket = "abc")
     
     read_s3 <- function(i){
       aws.s3::s3read_using(FUN = readr::read_csv, object = info_path[i],
-                           bucket = "amgen-cfda-dswb-projects-adhoc")
+                           bucket = "abc")
     }
     
     index_table <- purrr::map_df(.x = 1:length(info_path), .f = read_s3)
@@ -88,7 +88,7 @@ test_data_table_server <- function(input, output, session ){
       content = function(file) {
         
         dft <- aws.s3::s3read_using(FUN = readr::read_csv, object = data_path[i],
-                                    bucket = "amgen-cfda-dswb-projects-adhoc")
+                                    bucket = "abc")
         
         readr::write_csv(x = dft, path = file)
       }
