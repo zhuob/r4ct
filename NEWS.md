@@ -1,3 +1,5 @@
+# r4ct 0.2.10
+
 # r4ct 0.2.9
   * expand `estimate_dlt_isoreg` so that it can exclude dose levels with DU from
   estimating MTD. One `du` argument added
