@@ -1,4 +1,4 @@
-library(dplyr)
+# library(dplyr)
 
 testthat::test_that( "randomized enrollment/dropout is done correctly",{
 
@@ -12,8 +12,8 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
   # result: the (by piece) mean of the resulting vector should match 1/rate
 
   rate <- c(7, 10, 50); starttime <- c(0, 5e3, 1e4)
-  timein1 <- rand_inout(nsbj = 1e5, enrl_timecut = starttime, enrl_rate = rate,
-                        drop_timecut = NA, drop_prob = NA)
+  suppressMessages(timein1 <- rand_inout(nsbj = 1e5, enrl_timecut = starttime, enrl_rate = rate,
+                        drop_timecut = NA, drop_prob = NA))
 
   x1 <- mean(diff(timein1$timein[timein1$timein_piece == 1]));
   x2 <- mean(diff(timein1$timein[timein1$timein_piece == 2]));
@@ -28,19 +28,19 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
   # Logic: if we let the first piece of rate to be 0, it can test whether this
   #        function can handle the issue
   # Result: the returned timein should be all positive and finite
-  x4 <- rand_inout(nsbj = 200, enrl_rate = c(0, 10), enrl_timecut = c(0, 6),
-                    drop_timecut = NA, drop_prob = NA)
+  x4 <- suppressMessages(rand_inout(nsbj = 200, enrl_rate = c(0, 10), enrl_timecut = c(0, 6),
+                    drop_timecut = NA, drop_prob = NA))
   testthat::expect_equal(sum(is.infinite(x4$timein)), 0)
 
 
   ########## Need to think of a case to verify the random dropout time
   # one piece dropout
-  timeout1 <- rand_inout(nsbj = 3e5, enrl_timecut = 0,
+  suppressMessages(timeout1 <- rand_inout(nsbj = 3e5, enrl_timecut = 0,
                         enrl_rate = 1.25e4,
                         drop_timecut = 12,
-                        drop_prob = 0.10)
+                        drop_prob = 0.10))
 
-  testthat::expect_equal(mean(timeout1$timeout < 12), 0.1, tol = 1e-3);
+  testthat::expect_equal(mean(timeout1$timeout < 12), 0.1, tolerance = 1e-2);
 
   ####  add a test to check the number of subjects generated at a given time
   ## interval is correct
@@ -50,10 +50,10 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
   pr1 <- c()
 
   for(i in 1:1000){
-    x1 <- rand_inout(nsbj = 1e4, enrl_timecut = enrl_timecut, enrl_rate = enrl_rate)
+    suppressMessages(x1 <- rand_inout(nsbj = 1e4, enrl_timecut = enrl_timecut, enrl_rate = enrl_rate))
     pr1[i] <- sum(x1$timein < enrl_timecut[2])
   }
-  testthat::expect_equal(mean(pr1), 1, tol = 1e-1)
+  testthat::expect_equal(mean(pr1), 1, tolerance = 1e-1)
 
   }
 )
@@ -104,7 +104,7 @@ testthat::test_that("randomized arm with probability is done correctly", {
   # is the probability correct?
   nsim <- 1e5; prob0 <- c(0.5, 0.2, 0.3)
   x1 <- table(rand_arm_rar(nsbj = nsim, blocksize = 10, prob = prob0))/nsim
-  testthat::expect_equal(as.vector(x1), prob0, tol = 1e-2)
+  testthat::expect_equal(as.vector(x1), prob0, tolerance = 1e-2)
 
 }
 )
