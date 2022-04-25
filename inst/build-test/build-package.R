@@ -49,7 +49,8 @@ import_packages <- list(
               "shinydashboard" = "0.7.2", 
               "tibble"         = "3.1.5",
               "lifecycle"      = "1.0.1",
-              "Rdpack"         = "2.1.2"  # for reference
+              "Rdpack"         = "2.1.2",  # for reference, 
+              "survival"       = "3.2-13"
               )
 
 import_packages <- setNames(lapply(sort(names(import_packages)), 

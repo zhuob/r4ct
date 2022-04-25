@@ -23,6 +23,7 @@ Imports:
     shiny (>= 1.7.1),
     shinydashboard (>= 0.7.2),
     stringr (>= 1.4.0),
+    survival (>= 3.2-13),
     tibble (>= 3.1.5),
     tidyr (>= 1.0.0)
 Config/testthat/edition: 3
