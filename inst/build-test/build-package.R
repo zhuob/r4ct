@@ -50,7 +50,7 @@ import_packages <- list(
               "tibble"         = "3.1.5",
               "lifecycle"      = "1.0.1",
               "Rdpack"         = "2.1.2",  # for reference, 
-              "survival"       = "3.2-13"
+              "survival"       = "3.1-6"
               )
 
 import_packages <- setNames(lapply(sort(names(import_packages)), 

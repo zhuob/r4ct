@@ -68,8 +68,8 @@ run_survival <- function(time, censor, arm, control = NA){
   median_fu_arms <- summary(follow_up)$table[, 'median']
 
   # mean follow-up time
-  tmp <- survival:::survmean(follow_up, rmean = 999)
-  mean_fu_arms<- tmp$matrix[, "rmean"]
+  # tmp <- survival:::survmean(follow_up, rmean = 999)
+  # mean_fu_arms<- tmp$matrix[, "rmean"]
   
   # remove the notes in building packages
   nsubj <- nevent <- p_logrank <- NULL
@@ -81,8 +81,8 @@ run_survival <- function(time, censor, arm, control = NA){
     nevent = median_arms[, "events"],
     p_logrank = lr_pvalue,
     median_time = median_arms[, "median"],
-    median_fu = median_fu_arms, 
-    mean_fu = mean_fu_arms
+    median_fu = median_fu_arms# , 
+    # mean_fu = mean_fu_arms
   )
   
   # consolidate results
