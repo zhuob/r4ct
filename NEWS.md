@@ -1,5 +1,10 @@
+# r4ct 0.2.11
+  * add function `find_hazard` for derivation of parameters for correlated ORR
+  and OS
+ 
 # r4ct 0.2.10
-
+  * add a function `run_survival` to run survival analysis 
+  
 # r4ct 0.2.9
   * expand `estimate_dlt_isoreg` so that it can exclude dose levels with DU from
   estimating MTD. One `du` argument added

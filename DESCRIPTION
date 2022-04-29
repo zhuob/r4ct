@@ -1,7 +1,7 @@
 Package: r4ct
 Type: Package
 Title: R tools for clinical trials
-Version: 0.2.10
+Version: 0.2.11
 Authors@R:
     c(person(given = "bling",
              family = "bling",
@@ -25,10 +25,11 @@ Imports:
     stringr (>= 1.4.0),
     survival (>= 3.1-6),
     tibble (>= 3.1.5),
-    tidyr (>= 1.0.0)
+    tidyr (>= 1.0.0),
+    mathjaxr (>= 1.2-0)
 Config/testthat/edition: 3
 RoxygenNote: 7.1.2
-RdMacros: Rdpack 
+RdMacros: Rdpack, mathjaxr 
 Depends: 
     R (>= 3.5.0)
 Roxygen: list(markdown = TRUE)
@@ -36,7 +37,6 @@ Suggests:
     knitr (>= 1.36),
     DT (>= 0.20),
     markdown (>= 1.1),
-    survminer (>= 0.4.9),
     covr,
     testthat (>= 3.1.1),
     rmarkdown

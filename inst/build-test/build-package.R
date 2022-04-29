@@ -50,7 +50,8 @@ import_packages <- list(
               "tibble"         = "3.1.5",
               "lifecycle"      = "1.0.1",
               "Rdpack"         = "2.1.2",  # for reference, 
-              "survival"       = "3.1-6"
+              "survival"       = "3.1-6",
+              "mathjaxr"       = "1.2-0"
               )
 
 import_packages <- setNames(lapply(sort(names(import_packages)), 
@@ -63,7 +64,7 @@ for(k in 1:length(import_packages)){
 
 # for suggested packages
 suggest_packages <- list(
-        "survminer"          = "0.4.9", 
+     #   "survminer"          = "0.4.9", 
         "DT"                 = "0.20", 
         "markdown"           = "1.1",
         "testthat"           = "3.1.1",
@@ -96,6 +97,9 @@ usethis::use_vignette("help")
 usethis::use_version("patch")
 
 
+## to preview an help file 
+devtools::document(roclets = c('rd', 'collate', 'namespace'))
+mathjaxr::preview_rd("find_hazard.Rd")
 
 ################ Check and test ################################################
 devtools::load_all()
@@ -113,7 +117,8 @@ devtools::build(manual = T)
 ## generate the help manual.
 pack <- "r4ct"
 path <- find.package(pack)
-if (file.exists(paste0(pack, ".pdf"))) {file.remove(paste0(pack, ".pdf"))}
+manual_name <- "R4ClinicalTrial"
+if (file.exists(paste0(manual_name, ".pdf"))) {file.remove(paste0(manual_name, ".pdf"))}
 
 # system(paste(shQuote(file.path(R.home("bin"), "R")), "CMD", "Rd2pdf", shQuote(path)))
 system(paste(file.path(R.home("bin"), "R"), "CMD", "Rd2pdf", shQuote(path)))

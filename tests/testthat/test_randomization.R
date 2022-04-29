@@ -10,7 +10,7 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
   #         resulting data should follow exponential distribution with rates
   #         specified
   # result: the (by piece) mean of the resulting vector should match 1/rate
-
+  set.seed(1234)
   rate <- c(7, 10, 50); starttime <- c(0, 5e3, 1e4)
   suppressMessages(timein1 <- rand_inout(nsbj = 1e5, enrl_timecut = starttime, enrl_rate = rate,
                         drop_timecut = NA, drop_prob = NA))
@@ -28,6 +28,7 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
   # Logic: if we let the first piece of rate to be 0, it can test whether this
   #        function can handle the issue
   # Result: the returned timein should be all positive and finite
+  set.seed(5678)
   x4 <- suppressMessages(rand_inout(nsbj = 200, enrl_rate = c(0, 10), enrl_timecut = c(0, 6),
                     drop_timecut = NA, drop_prob = NA))
   testthat::expect_equal(sum(is.infinite(x4$timein)), 0)
@@ -35,6 +36,7 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
 
   ########## Need to think of a case to verify the random dropout time
   # one piece dropout
+  set.seed(9101112)
   suppressMessages(timeout1 <- rand_inout(nsbj = 3e5, enrl_timecut = 0,
                         enrl_rate = 1.25e4,
                         drop_timecut = 12,
@@ -48,7 +50,7 @@ testthat::test_that( "randomized enrollment/dropout is done correctly",{
   enrl_rate = c(1, 50 )
 
   pr1 <- c()
-
+  set.seed(12345)
   for(i in 1:1000){
     suppressMessages(x1 <- rand_inout(nsbj = 1e4, enrl_timecut = enrl_timecut, enrl_rate = enrl_rate))
     pr1[i] <- sum(x1$timein < enrl_timecut[2])
