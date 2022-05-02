@@ -2,6 +2,8 @@
 
 export("%>%")
 export(bayes_pred_go_nogo)
+export(boin_decision_matrix)
+export(boin_tox_interval)
 export(estimate_dlt_isoreg)
 export(farrington_manning_chan_pval)
 export(farrington_manning_n)

@@ -114,6 +114,8 @@ mtpi2_decision_matrix <- function(cocap, target, a, b, tolerance1, tolerance2, t
   dtab[untox_cell] <- "DU"
   dtab[non_compatible] <- NA
   
+  row.names(dtab) <- paste("dlt=", 1:nrow(dtab)-1, sep = "")
+  colnames(dtab) <- paste("n=", 1:ncol(dtab), sep = "")
   decision_info$decision_table <- dtab
   return(dtab)
   
@@ -259,5 +261,113 @@ isotonic_reg <- function(x, y){
   return(p)
 }
 
+
+#' BOIN Decision Matrix
+#' @description Derive decision matrix with BOIN method
+#' \loadmathjax
+#' @details The decision matrix is derived by BOIN method. Given the target
+#'   toxicity probability, it first calculates two quantities \mjseqn{\lambda_e}
+#'   and \mjseqn{\lambda_d}, in which `De-escalation` decision is made if
+#'   observed \mjseqn{\hat{p}\in (\lambda_d, 1)} and `Stay` decision is recommended when
+#'   \mjseqn{\hat{p}\in (\lambda_e, \lambda_d]} and `Escalate` when
+#'   \mjseqn{\hat{p} \in (0,\lambda_e]} according to 
+#'   [FDA FFP-designated version of BOIN](https://www.fda.gov/media/155364/download).
+#'    In the original BOIN paper, the boundary values are set as \mjseqn{(0, \lambda_e],
+#'   (\lambda_e, \lambda_d)} and \mjseqn{[\lambda_d, 1)}.
+#' @name boin_decision_matrix
+#' @references{
+#'   \insertRef{bayesyuany2016}{r4ct}
+#' }
+#' @rdname boin_decision_matrix
+#' @param cocap cohort cap for each dose
+#' @param target target toxicity probability
+#' @param phi1 the highest toxicity probability deemed subtherapeutic such that
+#'   dose-escalation should be made
+#' @param phi2 lowest toxicity rate deemed overly toxic such that dose
+#'   de-escalation is required
+#' @param tox Unacceptable Toxicity: Prob(Overdosing)
+#'
+#' @export
+#'
+NULL 
+
+#' @rdname boin_decision_matrix
+#' @return for \code{boin_decision_matrix}, it returns a decision matrix with
+#'   rows being the number of toxicities, and column the corresponding number of
+#'   subjects in that cohort
+#' @examples
+#' # to repeat the supplementary table S1 in BOIN paper
+#' target1 <- 0.25
+#' x1 <- boin_decision_matrix(18, target1)
+
+boin_decision_matrix <- function(cocap, target, phi1 = 0.6*target, phi2 = 1.4*target, 
+                                 tox = 0.95){
+  
+  # calculate the optimal boundaries for dose-escalation rule, using the formula 
+  # from the BOIN paper
+  # if p < lambda_e then "E"; if lambda_e < p < lambda_d "S"; if p > lambda_d, "D"
+  lambdas <- boin_tox_interval(target = target, phi1 = phi1, phi2 = phi2)
+  lambda_d <- lambdas[2]; lambda_e <- lambdas[1]
+  
+  #  initialte decision matrix
+  dtab <- matrix(NA, nrow = cocap + 1, ncol = cocap)
+  row.names(dtab) <- paste("dlt=", 1:nrow(dtab)-1, sep = "")
+  colnames(dtab) <- paste("n=", 1:ncol(dtab), sep = "")
+  
+  # initiate observed proportion of toxicity
+  obs_tox <- dtab; 
+  excessive_tox <- matrix(NA, nrow = cocap + 1, ncol = cocap)
+  for(i in 1:cocap){
+    ntox <- 0:i; nsubj <- i
+    obs_tox[ntox+1, nsubj] <- ntox/nsubj 
+    if(i >=3){ # if at least 3 subjects in the cohort, start DU assessment
+      # note: this means the beta prior (1,1) is used to calculate probabilities
+      excessive_tox[ntox+1, nsubj] <-stats::pbeta(target, ntox+1, nsubj-ntox+1, lower.tail = FALSE)
+    }
+  }
+  # assign D/E/S levels to each cell
+  dtab[obs_tox <= lambda_e] <- "E"
+  dtab[obs_tox > lambda_e & obs_tox <= lambda_d] <- "S"
+  dtab[obs_tox > lambda_d] <- "D"
+  # unacceptable Toxicities
+  dtab[excessive_tox > tox] <- "DU"
+  
+  return(dtab)
+  
+}
+  
+
+
+#' @rdname boin_decision_matrix
+#' @return for \code{boin_tox_interval}, it returns a vector of length 2,
+#'   corresponding to boundaries for escalation/de-escalation
+#' @export
+#' @examples 
+#' # to reproduce the results in S3 of the supplementary table in the BOIN paper
+#'  boin_tox_interval(target = 0.1, phi2 = 1.2*0.1)
+boin_tox_interval <- function(target, phi1 = 0.6*target, phi2 = 1.4*target){
+  
+  # checking validity of parameters
+  if (target < 0.05) {
+    stop("the target is too low! ")
+  }
+  if (target > 0.6) {
+    stop("the target is too high!")
+  }
+  # per the BOIN paper, setting phi1 or phi2 to close to the target makes it hard
+  # to discriminate the target toxicity from rates close to it
+  if ((target - phi1) < (0.1 * target)) {
+    stop("the probability deemed safe cannot be higher than or too close to the target!")
+  }
+  if ((phi2 - target) < (0.1 * target)) {
+    stop("the probability deemed toxic cannot be lower than or too close to the target!")
+  }
+  
+  lambda_e <- log((1-phi1)/(1-target))/log((target*(1-phi1))/(phi1*(1-target)))
+  lambda_d <- log((1-target)/(1-phi2))/log((phi2*(1-target))/(target*(1-phi2)))
+  
+  return(c(lambda_e, lambda_d))
+  
+}
 
 

@@ -68,7 +68,9 @@ suggest_packages <- list(
         "DT"                 = "0.20", 
         "markdown"           = "1.1",
         "testthat"           = "3.1.1",
-        "knitr"              = "1.36"
+        "knitr"              = "1.36",
+        "purrr"              = "0.3.0",
+        "BOIN"               = "2.7.0"
 )
 suggest_packages <- setNames(lapply(sort(names(suggest_packages)), 
                                    FUN = function(n) suggest_packages[[n]]), sort(names(suggest_packages)))

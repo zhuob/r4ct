@@ -1,6 +1,7 @@
 # r4ct 0.2.11
   * add function `find_hazard` for derivation of parameters for correlated ORR
   and OS
+  * add implementation of BOIN method for dose-escalation 
  
 # r4ct 0.2.10
   * add a function `run_survival` to run survival analysis 
