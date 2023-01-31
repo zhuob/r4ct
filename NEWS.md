@@ -1,3 +1,5 @@
+# r4ct 0.2.12
+
 # r4ct 0.2.11
   * add function `find_hazard` for derivation of parameters for correlated ORR
   and OS
