@@ -49,7 +49,7 @@ observed \mjseqn{\hat{p}\in (\lambda_d, 1)} and \code{Stay} decision is recommen
 \mjseqn{\hat{p} \in (0,\lambda_e]} according to
 \href{https://www.fda.gov/media/155364/download}{FDA FFP-designated version of BOIN}.
 In the original BOIN paper, the boundary values are set as \mjseqn{(0, \lambda_e],
-(\lambda_e, \lambda_d)} and \mjseqn{[\lambda_d, 1)}.
+  (\lambda_e, \lambda_d)} and \mjseqn{[\lambda_d, 1)}.
 }
 \examples{
 # to repeat the supplementary table S1 in BOIN paper

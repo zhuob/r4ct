@@ -45,36 +45,36 @@ each group
 where \mjseqn{\lambda_0} is the harzard rate for non-responders in the
 control group, and the survival time follows exponential distribution. Then
 \mjseqn{T |X = 0, Y = 0 \sim \exp(\lambda_0)} and \mjseqn{T|X = 1, Y =
-0\sim \exp(\rho_2\lambda_0)}, and so on. Following \mjsdeqn{P(T\leq t| X=1)
-= P(T\leq t|Y=0,X=1)\cdot P(Y=0|X=1) + P(T\leq t|Y=1,X=1)\cdot P(Y=1|X=1),}
+  0\sim \exp(\rho_2\lambda_0)}, and so on. Following \mjsdeqn{P(T\leq t| X=1)
+  = P(T\leq t|Y=0,X=1)\cdot P(Y=0|X=1) + P(T\leq t|Y=1,X=1)\cdot P(Y=1|X=1),}
 it can be shown that \mjsdeqn{P(T\leq t|X=1) =
-(1-\exp(-\rho_2\lambda_0t))(1-p_1) + (1-\exp(-\rho_1\rho_2\lambda_0t))p_1}
+  (1-\exp(-\rho_2\lambda_0t))(1-p_1) + (1-\exp(-\rho_1\rho_2\lambda_0t))p_1}
 Suppose \mjseqn{p_0,p_1} are the response rate, \mjseqn{m_0, m_1} are the
 median survival time for control and Treatment arm, then the following
 equations hold \mjdeqn{\texttt{For
-Treatment:~~}[1-\exp(-\lambda_0\rho_1\rho_2m_1)]p_1 +
-[1-\exp(-\lambda_0\rho_2m_1)](1-p_1) = \frac{1}{2}}{ASCII representation}
-\mjdeqn{\texttt{For Control:~~}[1-\exp(-\lambda_0\rho_1m_0)]p_0 +
-[1-\exp(-\lambda_0m_0)](1-p_0) = \frac{1}{2}}{ASCII representation} Given
+  Treatment:~~}\[1-\exp(-\lambda_0\rho_1\rho_2m_1)\]p_1 +
+  \[1-\exp(-\lambda_0\rho_2m_1)\](1-p_1) = \frac{1}{2}}{ASCII representation}
+\mjdeqn{\texttt{For Control:~~}\[1-\exp(-\lambda_0\rho_1m_0)\]p_0 +
+  \[1-\exp(-\lambda_0m_0)\](1-p_0) = \frac{1}{2}}{ASCII representation} Given
 \mjseqn{p_0, p_1, m_0, m_1} and \mjseqn{\rho_1}, the quantities
 \mjseqn{\rho_2} and \mjseqn{\lambda_2} can be solved.
 
 This model leads to evaluation of survival time by treatment assignment and
 response status. Suppose that the randomization ratio is \mjseqn{1:r_0}
 for \code{Control:Treatment} arm respectively, then \mjseqn{P(T> t|Y = 1) =
-P(T> t|X=0, Y=1)\cdot P(X=0|Y=1) + P(T>t|X=1,Y=1)\cdot P(X=1|Y=1)}. Note
+  P(T> t|X=0, Y=1)\cdot P(X=0|Y=1) + P(T>t|X=1,Y=1)\cdot P(X=1|Y=1)}. Note
 \mjseqn{P(X=0|Y=1) = P(X=0)} because treatment assignment is independent of
 response status. Then it follows that for survival function
 \mjsdeqn{\texttt{For Responder:~~ }P(T> t|Y = 1) = \frac{1}{1 +
-r_0}\cdot\exp(-\lambda_0\rho_1t) + \frac{r_0}{1 +
-r_0}\cdot\exp(-\lambda_0\rho_1\rho_2t)} \mjsdeqn{\texttt{For
-Non-responder:~~}P(T> t|Y=0) = \frac{1}{1+r_0}\cdot\exp(-\lambda_0t) +
-\frac{r_0}{1+r_0}\cdot\exp(-\lambda_0\rho_2t)} Applying similar logic we
+  r_0}\cdot\exp(-\lambda_0\rho_1t) + \frac{r_0}{1 +
+  r_0}\cdot\exp(-\lambda_0\rho_1\rho_2t)} \mjsdeqn{\texttt{For
+  Non-responder:~~}P(T> t|Y=0) = \frac{1}{1+r_0}\cdot\exp(-\lambda_0t) +
+  \frac{r_0}{1+r_0}\cdot\exp(-\lambda_0\rho_2t)} Applying similar logic we
 can obtain \mjsdeqn{\texttt{Treatment:~~}P(T>t|X=1) =
-p_1\cdot\exp(-\lambda_0\rho_1\rho_2t) +
-(1-p_1)\cdot\exp(-\lambda_0\rho_2t)}
+  p_1\cdot\exp(-\lambda_0\rho_1\rho_2t) +
+  (1-p_1)\cdot\exp(-\lambda_0\rho_2t)}
 \mjsdeqn{\texttt{Control:~~}P(T>t|X=0)=p_0\cdot\exp(-\lambda_0\rho_1t) +
-(1-p_0)\cdot\exp(-\lambda_0t)}
+  (1-p_0)\cdot\exp(-\lambda_0t)}
 }
 \examples{
 # Calculate the parameters
