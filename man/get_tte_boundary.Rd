@@ -20,19 +20,22 @@ get_tte_boundary(hr_bound, zval, alpha, n_event, rand_ratio)
 
 \item{rand_ratio}{randomization ratio in favor of treatment group}
 }
+\value{
+a data frame about the relationships between the metrics
+}
 \description{
 For a given event size and randomization ratio, calculate the boundaries for
 claiming significance. This is especially useful for group sequential trial
 with time-to-event endpoint.
 }
 \examples{
-get_tte_boundary(hr_bound = NA, zval = NA, alpha = design1$stageLevels[1], 
+get_tte_boundary(hr_bound = NA, zval = NA, alpha = 0.003808063, 
                  n_event = 199.8, rand_ratio = 1)
 # the results should match the following from rpact
-# design1 <- getDesignGroupSequential(
+# design1 <- rpact::getDesignGroupSequential(
 # kMax = 2, alpha = 0.025, beta = 0.1, 
 # informationRates = c(0.6, 1), typeOfDesign = "asOF")
-# getSampleSizeSurvival(design = design1, thetaH0 = 1, 
+# rpact::getSampleSizeSurvival(design = design1, thetaH0 = 1, 
 #                       pi2 = 0.05, hazardRatio = 0.7 )
 # NOT RUN
 }

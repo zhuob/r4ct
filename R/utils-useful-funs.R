@@ -9,17 +9,17 @@
 #' @param n_event number of events considered for the analysis 
 #' @param rand_ratio randomization ratio in favor of treatment group
 #'
-#' @return
+#' @return a data frame about the relationships between the metrics
 #' @export
 #'
 #' @examples
-#' get_tte_boundary(hr_bound = NA, zval = NA, alpha = design1$stageLevels[1], 
+#' get_tte_boundary(hr_bound = NA, zval = NA, alpha = 0.003808063, 
 #'                  n_event = 199.8, rand_ratio = 1)
 #' # the results should match the following from rpact
-#' # design1 <- getDesignGroupSequential(
+#' # design1 <- rpact::getDesignGroupSequential(
 #' # kMax = 2, alpha = 0.025, beta = 0.1, 
 #' # informationRates = c(0.6, 1), typeOfDesign = "asOF")
-#' # getSampleSizeSurvival(design = design1, thetaH0 = 1, 
+#' # rpact::getSampleSizeSurvival(design = design1, thetaH0 = 1, 
 #' #                       pi2 = 0.05, hazardRatio = 0.7 )
 #' # NOT RUN
 get_tte_boundary <- function(hr_bound, zval, alpha, n_event, rand_ratio){
@@ -54,6 +54,7 @@ get_tte_boundary <- function(hr_bound, zval, alpha, n_event, rand_ratio){
 #' @param censor indicator for censor or event, 0 = censored, 1 = event
 #' @param arm indicator for arm. Has to be at least two arms
 #' @param control the name of the control arm
+#' @param conf_level The confidence level to calculate for estimated hazard ratio
 #' @import survival
 #' @return a data frame containing results of sample size, p-value, decision,
 #'   number of events, hazard ratio with 95% confidence interval,
@@ -128,7 +129,7 @@ run_survival <- function(time, censor, arm, control = NA, conf_level){
     if(any(hr_est[, "exp(coef)"] > 1)){ lr_pvalue <- 1 - lr_pvalue }
     hr_ci <- exp(
       cox_obj$coefficients[, "coef"] + c(-1, 1)* 
-        qnorm((1-conf_level)/2, lower.tail = FALSE) *
+        stats::qnorm((1-conf_level)/2, lower.tail = FALSE) *
         cox_obj$coefficients[, 'se(coef)']
     )  
     

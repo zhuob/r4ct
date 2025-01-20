@@ -114,14 +114,14 @@ devtools::check()
 # build
 Sys.getenv("PATH")
 #Sys.setenv(PATH = "C:/texlive/2016/bin/win32")
-devtools::build(manual = T)
+devtools::build(manual = FALSE)
 
 ## generate the help manual.
-pack <- "r4ct"
-path <- find.package(pack)
-manual_name <- "R4ClinicalTrial"
-if (file.exists(paste0(manual_name, ".pdf"))) {file.remove(paste0(manual_name, ".pdf"))}
+# pack <- "r4ct"
+# path <- find.package(pack)
+# manual_name <- "r4ct"
+# if (file.exists(paste0(manual_name, ".pdf"))) {file.remove(paste0(manual_name, ".pdf"))}
 
 # system(paste(shQuote(file.path(R.home("bin"), "R")), "CMD", "Rd2pdf", shQuote(path)))
-system(paste(file.path(R.home("bin"), "R"), "CMD", "Rd2pdf", shQuote(path)))
+# system(paste(file.path(R.home("bin"), "R"), "CMD", "Rd2pdf", shQuote(path)))
 

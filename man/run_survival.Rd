@@ -14,6 +14,8 @@ run_survival(time, censor, arm, control = NA, conf_level)
 \item{arm}{indicator for arm. Has to be at least two arms}
 
 \item{control}{the name of the control arm}
+
+\item{conf_level}{The confidence level to calculate for estimated hazard ratio}
 }
 \value{
 a data frame containing results of sample size, p-value, decision,

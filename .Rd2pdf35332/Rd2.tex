@@ -1,0 +1,51 @@
+\nonstopmode{}
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge Package `r4ct'}}
+\par\bigskip{\large \today}
+\end{center}
+\inputencoding{utf8}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdftitle = {r4ct: R tools for clinical trials}}}{}
+\ifthenelse{\boolean{Rd@use@hyper}}{\hypersetup{pdfauthor = {bling bling}}}{}
+\begin{description}
+\raggedright{}
+\item[Type]\AsIs{Package}
+\item[Title]\AsIs{R tools for clinical trials}
+\item[Version]\AsIs{0.2.14}
+\item[Maintainer]\AsIs{bling_bling }\email{rickyb.zh@gmail.com}\AsIs{}
+\item[Description]\AsIs{This package documents the R shiny tools I develop over the years through my working experience.}
+\item[License]\AsIs{MIT + file LICENSE}
+\item[Encoding]\AsIs{UTF-8}
+\item[LazyData]\AsIs{true}
+\item[Imports]\AsIs{dplyr (>= 1.0.7),
+ggplot2 (>= 3.3.5),
+lifecycle (>= 1.0.1),
+magrittr,
+Rdpack (>= 2.1.2),
+readr (>= 2.0.2),
+survival (>= 3.1-6),
+tibble (>= 3.1.5),
+tidyr (>= 1.0.0),
+mathjaxr (>= 1.2-0)}
+\item[Config/testthat/edition]\AsIs{3}
+\item[RoxygenNote]\AsIs{7.3.1}
+\item[RdMacros]\AsIs{Rdpack, mathjaxr, lifecycle}
+\item[Depends]\AsIs{R (>= 3.5.0)}
+\item[Roxygen]\AsIs{list(markdown = TRUE)}
+\item[Suggests]\AsIs{knitr (>= 1.36),
+markdown (>= 1.1),
+covr,
+testthat (>= 3.1.1),
+rmarkdown,
+BOIN (>= 2.7.0),
+purrr (>= 0.3.0)}
+\item[VignetteBuilder]\AsIs{knitr}
+\end{description}
+\Rdcontents{\R{} topics documented:}

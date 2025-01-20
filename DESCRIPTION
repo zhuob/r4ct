@@ -20,9 +20,6 @@ Imports:
     magrittr,
     Rdpack (>= 2.1.2),
     readr (>= 2.0.2),
-    shiny (>= 1.7.1),
-    shinydashboard (>= 0.7.2),
-    stringr (>= 1.4.0),
     survival (>= 3.1-6),
     tibble (>= 3.1.5),
     tidyr (>= 1.0.0),
@@ -35,7 +32,6 @@ Depends:
 Roxygen: list(markdown = TRUE)
 Suggests: 
     knitr (>= 1.36),
-    DT (>= 0.20),
     markdown (>= 1.1),
     covr,
     testthat (>= 3.1.1),
