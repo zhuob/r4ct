@@ -1,6 +1,10 @@
 # r4ct 0.2.14
+  * Restructure the package such that only essential functions are included 
+  (removing simulation-related functions and shiny apps)
+  * add function `get_tte_boundary` for converting treatment effects of survival
+  endpoint in different scales 
+  * add function `test_truncated_hochberg` to perform truncated Hochberg testing
 
-# r4ct 0.2.12
 
 # r4ct 0.2.11
   * add function `find_hazard` for derivation of parameters for correlated ORR
