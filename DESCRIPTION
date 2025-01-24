@@ -1,7 +1,7 @@
 Package: r4ct
 Type: Package
 Title: R tools for clinical trials
-Version: 0.2.14
+Version: 0.2.15
 Authors@R:
     c(person(given = "bling",
              family = "bling",
@@ -21,6 +21,8 @@ Imports:
     Rdpack (>= 2.1.2),
     readr (>= 2.0.2),
     stringr (>= 1.4.0),
+    haven (>= 2.1.2),
+    readxl (>= 1.1.0),
     survival (>= 3.1-6),
     tibble (>= 3.1.5),
     tidyr (>= 1.0.0),

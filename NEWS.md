@@ -1,3 +1,6 @@
+# r4ct 0.2.15
+  * add a wrapper function to read data more easily
+
 # r4ct 0.2.14
   * Restructure the package such that only essential functions are included 
   (removing simulation-related functions and shiny apps)

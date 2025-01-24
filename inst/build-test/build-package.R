@@ -46,7 +46,9 @@ import_packages <- list(
               # "ggplot2"        = "3.3.5", 
               "dplyr"          = "1.0.7", 
               "stringr"        = "1.4.0",
+              "haven"          = "2.1.2",
               # "shinydashboard" = "0.7.2", 
+              "readxl"         = "1.1.0",
               "tibble"         = "3.1.5",
               "lifecycle"      = "1.0.1",
               "Rdpack"         = "2.1.2",  # for reference, 
@@ -96,7 +98,7 @@ usethis::use_vignette("help")
 
 
 ## update versions -----------------------------------------------------------
-usethis::use_version("minor")
+usethis::use_version("patch")
 
 
 ## to preview an help file 
