@@ -6,7 +6,7 @@
 \alias{r4ct-package}
 \title{r4ct: R tools for clinical trials}
 \description{
-This package documents the R shiny tools I develop over the years through my working experience.
+This package documents the R functions I develop over the years.
 }
 \author{
 \strong{Maintainer}: bling bling \email{rickyb.zh@gmail.com}

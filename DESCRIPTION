@@ -9,7 +9,7 @@ Authors@R:
              email = "rickyb.zh@gmail.com")
              )
 Maintainer: bling_bling <rickyb.zh@gmail.com>
-Description: This package documents the R shiny tools I develop over the years through my working experience.
+Description: This package documents the R functions I develop over the years.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

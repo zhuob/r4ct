@@ -33,7 +33,8 @@ NULL
 #' @importFrom haven read_sas
 #'
 #' @return the data set with column names supported in R
-#' @export
+#' @noRd
+# #' @export
 #'
 # #' @examples
 load_data <- function(
@@ -67,4 +68,25 @@ load_data <- function(
   }
   
   return(dat)
+}
+
+
+#' get the labels of a SAS data set
+#'
+#' @param sas_data 
+#'
+#' @return a tibble showing the column names, their associated labels, as well 
+#'    as the location (column numbers)
+#' @noRd
+#'
+get_sas7bdat_labels <- function(sas_data){
+  
+  var_labels <- sapply(sas_data, function(x) attr(x, "label"))
+  
+  return(tibble::tibble(
+    col_number = 1:length(var_labels),
+    col_name = names(sas_data),
+    col_label = var_labels
+  ))
+  
 }
