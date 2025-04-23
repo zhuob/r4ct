@@ -19,7 +19,8 @@ NULL
 #'
 #' @param data_folder the path to the data
 #' @param data_name the name of data to be loaded
-#' @param data_format the format of data, currently support 
+#' @param format_colnames whether to format column names so that they follow R
+#'   naming conventions
 #' \itemize{
 #'  \item{`sas7bdat`} {SAS format with `haven::read_sas`}
 #'  \item{`csv`} {CSV file supported by `readr::read_csv`}
@@ -40,7 +41,7 @@ NULL
 load_data <- function(
     data_folder, 
     data_name, 
-    data_format,
+    format_colnames = TRUE,
     ...){
   
   # to remove redudant "/" if provided 
@@ -50,7 +51,9 @@ load_data <- function(
     data_folder <- stringr::str_sub(data_folder, end = n_string - 1)
   }
   
-  data_to_read <- paste0(data_folder, "/", data_name, ".", data_format)
+  data_format <- stringr::str_split(data_name, "[.]")[[1]][2]
+  data_to_read <- paste0(data_folder, "/", data_name)
+  
   if (data_format == "sas7bdat"){
     dat <- haven::read_sas(data_to_read, ...)
   } else if (data_format == "csv"){
@@ -61,10 +64,12 @@ load_data <- function(
     dat <- readr::read_rds(data_to_read, ...)
   }
   
-  colnames(dat) <- tolower(colnames(dat))
-  # replace special characters with underscore
-  if (any(stringr::str_detect(names(dat), "[ .]"))){
-    names(dat) <- stringr::str_replace_all(names(dat), "[ .]", "_")
+  if(format_colnames){
+    colnames(dat) <- tolower(colnames(dat))
+    # replace special characters with underscore
+    if (any(stringr::str_detect(names(dat), "[ .]"))){
+      names(dat) <- stringr::str_replace_all(names(dat), "[ .]", "_")
+    }
   }
   
   return(dat)
