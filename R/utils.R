@@ -84,14 +84,27 @@ load_data <- function(
 #'    as the location (column numbers)
 #' @noRd
 #'
-get_sas7bdat_labels <- function(sas_data){
+get_sas7bdat_labels <- function(sas_data, df_view = TRUE, row_filter = NULL){
   
   var_labels <- sapply(sas_data, function(x) attr(x, "label"))
   
-  return(tibble::tibble(
+  result <- tibble::tibble(
     col_number = 1:length(var_labels),
     col_name = names(sas_data),
     col_label = var_labels
-  ))
+  )
   
+  if(!is.null(row_filter)){
+    result <- result %>% dplyr::filter(
+      stringr::str_detect(
+        col_label, stringr::regex(row_filter, ignore_case = TRUE)
+        )
+    )
+  }
+  
+  if(df_view){
+    View(result)
+  } else{
+    return(result)
+  }
 }
