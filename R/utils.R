@@ -97,7 +97,7 @@ get_sas7bdat_labels <- function(sas_data, df_view = TRUE, row_filter = NULL){
   if(!is.null(row_filter)){
     result <- result %>% dplyr::filter(
       stringr::str_detect(
-        col_label, stringr::regex(row_filter, ignore_case = TRUE)
+        as.character(col_label), stringr::regex(row_filter, ignore_case = TRUE)
         )
     )
   }
