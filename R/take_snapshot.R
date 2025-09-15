@@ -18,9 +18,7 @@
 #'
 #' @examples
 #' # an example to verify against rpact output
-#' library(dplyr)
-#' library(rpact)
-
+#' 
 #' design0 <- rpact::getDesignGroupSequential(
 #'   sided = 1, 
 #'   alpha = 0.02, 
