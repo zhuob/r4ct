@@ -1,3 +1,8 @@
+# r4ct 0.2.16
+  * add a function `take_snapshot` to take snapshot of simulated survival trial 
+  data,  by event or by calendar time are supported. This is a function written
+  by S3 method.
+
 # r4ct 0.2.15
   * add a wrapper function to read data more easily
 
