@@ -10,7 +10,7 @@ take_snapshot(by = c("time", "event"), ...)
 
 \method{take_snapshot}{event}(dummy, n_event, accrual_time, survival_time, dropout_time, ...)
 
-\method{take_snapshot}{event}(snapshot_time, accrual_time, survival_time, dropout_time, ...)
+\method{take_snapshot}{time}(snapshot_time, accrual_time, survival_time, dropout_time, ...)
 }
 \arguments{
 \item{by}{Character string specifying the snapshot method.

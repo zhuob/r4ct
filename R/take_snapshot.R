@@ -18,7 +18,7 @@
 #'
 #' @examples
 #' # an example to verify against rpact output
-#' 
+#' library(dplyr)
 #' design0 <- rpact::getDesignGroupSequential(
 #'   sided = 1, 
 #'   alpha = 0.02, 
@@ -113,6 +113,7 @@ take_snapshot <- function(by = c("time", "event"), ...){
 #' @seealso [take_snapshot.time()]
 #' 
 #' @rdname take_snapshot
+#' @export
 #' @method take_snapshot event
 take_snapshot.event <- function(
     dummy, 
@@ -173,7 +174,8 @@ take_snapshot.event <- function(
 #' @seealso [take_snapshot.event()]
 #' 
 #' @rdname take_snapshot
-#' @method take_snapshot event
+#' @export
+#' @method take_snapshot time
 take_snapshot.time <- function(
     snapshot_time, 
     accrual_time, 
