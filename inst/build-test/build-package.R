@@ -70,7 +70,8 @@ suggest_packages <- list(
         # "DT"                 = "0.20", 
         "markdown"           = "1.1",
         "testthat"           = "3.1.1",
-        "knitr"              = "1.36"
+        "knitr"              = "1.36",
+        "rpact"          = "3.4.0"
         # "purrr"              = "0.3.0",
         # "BOIN"               = "2.7.0"
 )
