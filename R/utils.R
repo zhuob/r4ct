@@ -108,3 +108,38 @@ get_sas7bdat_labels <- function(sas_data, df_view = TRUE, row_filter = NULL){
     return(result)
   }
 }
+
+
+
+#' Use the labels as the names of the output if the data features labels (e.g., SAS)
+#'
+#' @param df a data frame
+#'
+#' @return a tibble with updated column names by the corresponding labels
+#' @noRd
+#'
+use_label_as_name <- function(df){
+  
+  var_labels <- lapply(df, function(x) attr(x, "label"))
+  var_names <- names(df)
+  
+  new_name <- rep(NA, length(var_labels))
+  
+  for(i in seq_along(var_labels)) {
+    
+    tmp <- var_labels[[i]]
+    if (is.null(tmp)){
+      new_name[i] <- var_names[i]
+    } else if (tmp %in% new_name){
+      new_name[i] <- paste0(var_names[i], "-", tmp)
+    } else {
+      new_name[i] <- tmp
+    }
+  }
+  
+  names(df) <- new_name
+  
+  return(df)
+}
+
+
