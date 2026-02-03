@@ -72,6 +72,11 @@ get_tte_boundary <- function(hr_bound, zval, alpha, n_event, rand_ratio){
 #'
 run_survival <- function(time, censor, arm, control = NA, conf_level){
   
+  if(any(time <0)){
+    warning("Variable `time` contains negative values, resulting in under-estimated 
+            median follow-up time and over-estimated number of subjects.")
+  }
+  
   if(length(time) <= 1 | length(unique(arm)) == 1){
     if(length(time) <= 1){
       warning("Dataset is too small, survival analysis won't be performed by`run_cox`.")
