@@ -87,11 +87,13 @@ load_data <- function(
 get_sas7bdat_labels <- function(sas_data, df_view = TRUE, row_filter = NULL){
   
   var_labels <- sapply(sas_data, function(x) attr(x, "label"))
+  var_format <- sapply(sas_data, class)
   
   result <- tibble::tibble(
     col_number = 1:length(var_labels),
     col_name = names(sas_data),
-    col_label = var_labels
+    col_label = as.list(var_labels), 
+    col_format = as.list(var_format)
   )
   
   if(!is.null(row_filter)){
