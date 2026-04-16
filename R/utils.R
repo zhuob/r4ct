@@ -144,4 +144,21 @@ use_label_as_name <- function(df){
   return(df)
 }
 
+#' copy the labels from one data frame to other data frome, if available
+copy_label <- function(source_df, target_df){
+  
+  target_labels <- sapply(target_df, function(x) attr(x, "label"))
+  target_names <- names(target_df)
+  
+  source_labels <- sapply(source_df, function(x) attr(x, "label"))
+  source_names <- names(source_df)
+  
+  for(k in 1:ncol(target_df)){
+    if(is.null(target_labels[[k]])){
+      attr(target_df[[k]], "label") <- source_labels[match(target_names[k], source_names)][[1]]
+    }
+  }
+  
+  return(target_df)
+}
 
